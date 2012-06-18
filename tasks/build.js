@@ -30,7 +30,7 @@ grunt.registerMultiTask( "build-pages", "Process html files as pages, include @p
 	grunt.file.mkdir( targetDir );
 
 	grunt.utils.async.forEachSeries( files, function( fileName, fileDone ) {
-		var targetFileName = targetDir + path.basename( fileName );
+		var targetFileName = targetDir + fileName.replace( /^.+?\//, "" );
 
 		grunt.verbose.write( "Processing " + fileName + "..." );
 		grunt.file.copy( fileName, targetFileName, {
