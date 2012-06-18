@@ -153,60 +153,6 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 	});
 });
 
-
-grunt.registerMultiTask( "build-xml-entries-olde", "Process API xml files with xsl and pygmentize", function() {
-	var task = this,
-		taskDone = task.async(),
-		files = this.data,
-		// TODO make `entry` a custom post type instead of (ab)using `post`?
-		targetDir = grunt.config( "wordpress.dir" ) + "/posts/post/";
-
-	grunt.file.mkdir( targetDir );
-
-	grunt.utils.async.forEachSeries( files, function( fileName, fileDone ) {
-		grunt.verbose.write( "Reading " + fileName + "..." );
-		grunt.utils.spawn({
-			cmd: "xsltproc",
-			args: [ "entries2html.xsl", fileName ]
-		}, function( err, result ) {
-			var targetFileName;
-			if ( err ) {
-				grunt.verbose.error();
-				grunt.log.error( err );
-				fileDone();
-				return;
-			}
-			grunt.verbose.ok();
-
-			targetFileName = targetDir + path.basename( fileName );
-			targetFileName = targetFileName.substr( 0, targetFileName.length - "xml".length ) + "html";
-
-			grunt.verbose.write( "Pygmentizing " + targetFileName + "..." );
-			pygmentize.file( result, function( error, data ) {
-				if ( error ) {
-					grunt.verbose.error();
-					grunt.log.error( error );
-					fileDone();
-					return;
-				}
-				grunt.verbose.ok();
-
-				grunt.file.write( targetFileName, data );
-
-				fileDone();
-			});
-		});
-	}, function() {
-		if ( task.errorCount ) {
-			grunt.warn( "Task \"" + task.name + "\" failed." );
-			taskDone();
-			return;
-		}
-		grunt.log.writeln( "Built " + files.length + " entries." );
-		taskDone();
-	});
-});
-
 grunt.registerTask( "build-xml-categories", function() {
 	var task = this,
 		taskDone = task.async(),
