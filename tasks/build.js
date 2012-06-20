@@ -75,7 +75,9 @@ grunt.registerMultiTask( "build-resources", "Copy resources", function() {
 	grunt.file.mkdir( targetDir );
 
 	grunt.utils.async.forEachSeries( files, function( fileName, fileDone )  {
-		grunt.file.copy( fileName, targetDir + path.basename( fileName ) );
+		var targetFileName = targetDir + fileName.replace( /^.+?\//, "" );
+		 
+		grunt.file.copy( fileName, targetFileName );
 		fileDone();
 	}, function() {
 		if ( task.errorCount ) {
