@@ -41,6 +41,11 @@ grunt.registerMultiTask( "build-pages", "Process html files as pages, include @p
 			}
 		});
 
+		if ( grunt.option( "nohighlight" ) ) {
+			fileDone();
+			return;
+		}
+
 		grunt.verbose.write( "Pygmentizing " + targetFileName + "..." );
 		pygmentize.file( targetFileName, function( error, data ) {
 			if ( error ) {
