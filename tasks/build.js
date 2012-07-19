@@ -100,7 +100,21 @@ grunt.registerHelper("syntax-highlight", function( options, callback ) {
 	// receives the innerHTML of a <code> element and if the first character
 	// is an encoded left angle bracket, we'll "conclude" the "language" is html
 	function crudeHTMLcheck ( input ) {
-		return input.indexOf("&lt;") === 0 ? "html" : "";
+		return input.trim().indexOf("&lt;") === 0 ? "html" : "";
+	}
+
+	// when parsing the class attribute, make sure a class matches an actually
+	// highlightable language, instead of being presentational (e.g. 'example')
+	function getLanguageFromClass( str ) {
+		str = str || "";
+		var classes = str.split(" "),
+		c = classes.length;
+		while (--c) {
+			if ( nsh.getLanguage( classes[c] ) ) {
+				return classes[c];
+			}
+		}
+		return "";
 	}
 
 	var html = options.file ? grunt.file.read( options.file ) : options.cmd.stdout,
@@ -110,10 +124,13 @@ grunt.registerHelper("syntax-highlight", function( options, callback ) {
 		highlight.each( function( index, el ) {
 			var $t = $(this),
 			code = $t.html(),
-			lang = $t.attr("data-lang") || $t.attr("class") || crudeHTMLcheck( code ),
+			lang = $t.attr("data-lang") || getLanguageFromClass( $t.attr("class") ) || crudeHTMLcheck( code ),
+			linenum = $t.attr("data-linenum") || 1,
 			brush = nsh.getLanguage( lang ) || nsh.getLanguage( "js" ),
-			highlighted = nsh.highlight( code, brush );
-			$t.parent().replaceWith( highlighted );
+			highlighted = nsh.highlight( code, brush, {
+				"first-line": linenum
+			});
+			$t.parent().replaceWith( $(highlighted).removeAttr("id") );
 		});
 	}
 	catch ( excp ) {
