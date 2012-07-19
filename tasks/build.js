@@ -18,10 +18,12 @@ function htmlEscape(text) {
 }
 
 var // modules
-	pygmentize = require( "pygmentize" ),
+	fs = require( "fs" ),
+	cheerio = require( "cheerio" ),
+	nsh = require( "node-syntaxhighlighter" ),
 	path = require( "path" );
 
-grunt.registerMultiTask( "build-pages", "Process html files as pages, include @partials and pygmentize code snippets", function() {
+grunt.registerMultiTask( "build-pages", "Process html files as pages, include @partials and syntax higlight code snippets", function() {
 	var task = this,
 		taskDone = task.async(),
 		files = this.data,
@@ -46,8 +48,8 @@ grunt.registerMultiTask( "build-pages", "Process html files as pages, include @p
 			return;
 		}
 
-		grunt.verbose.write( "Pygmentizing " + targetFileName + "..." );
-		pygmentize.file( targetFileName, function( error, data ) {
+		grunt.verbose.write( "Syntax highlighting " + targetFileName + "..." );
+		grunt.helper("syntax-highlight", {file: targetFileName, target: targetFileName}, function( error, data ) {
 			if ( error ) {
 				grunt.verbose.error();
 				grunt.log.error( error );
@@ -91,6 +93,36 @@ grunt.registerMultiTask( "build-resources", "Copy resources", function() {
 		grunt.log.writeln( "Built " + files.length + " resources." );
 		taskDone();
 	});
+});
+
+grunt.registerHelper("syntax-highlight", function( options, callback ) {
+
+	// receives the innerHTML of a <code> element and if the first character
+	// is an encoded left angle bracket, we'll "conclude" the "language" is html
+	function crudeHTMLcheck ( input ) {
+		return input.indexOf("&lt;") === 0 ? "html" : "";
+	}
+
+	var html = options.file ? grunt.file.read( options.file ) : options.cmd.stdout,
+	$ = cheerio.load( html ),
+	highlight = $("pre > code");
+	try {
+		highlight.each( function( index, el ) {
+			var $t = $(this),
+			code = $t.html(),
+			lang = $t.attr("data-lang") || $t.attr("class") || crudeHTMLcheck( code ),
+			brush = nsh.getLanguage( lang ) || nsh.getLanguage( "js" ),
+			highlighted = nsh.highlight( code, brush );
+			$t.parent().replaceWith( highlighted );
+		});
+	}
+	catch ( excp ) {
+		callback( excp );
+		return;
+	}
+
+	callback( null, $.html() );
+
 });
 
 };
