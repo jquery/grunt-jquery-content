@@ -10,8 +10,8 @@ module.exports = function(grunt) {
 
 var // modules
 	fs = require( "fs" ),
+	nsh = require( "node-syntaxhighlighter" ),
 	path = require( "path" ),
-	pygmentize = require( "pygmentize" ),
 	rimraf = require( "rimraf" ),
 	spawn = require( "child_process" ).spawn;
 
@@ -82,7 +82,7 @@ grunt.registerMultiTask( "xmltidy", "Tidy xml files - changes source files!", fu
 	});
 });
 
-grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl and pygmentize", function() {
+grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl and syntax highlight", function() {
 	var task = this,
 		taskDone = task.async(),
 		files = this.data,
@@ -125,8 +125,9 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 				var targetHTMLFileName = targetDir + path.basename( fileName );
 				targetHTMLFileName = targetHTMLFileName.substr( 0, targetHTMLFileName.length - "xml".length ) + "html";
 
-				grunt.verbose.write( "Pygmentizing " + targetHTMLFileName + "..." );
-				pygmentize.file( pass2result, function( error, data ) {
+				grunt.verbose.write( "Syntax highlighting " + targetHTMLFileName + "..." );
+				grunt.helper("syntax-highlight", {cmd: pass2result, target: targetHTMLFileName}, function( error, data ) {
+
 					if ( error ) {
 						grunt.verbose.error();
 						grunt.log.error( error );
