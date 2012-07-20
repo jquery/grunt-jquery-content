@@ -126,9 +126,11 @@ grunt.registerHelper("syntax-highlight", function( options, callback ) {
 			code = $t.html(),
 			lang = $t.attr("data-lang") || getLanguageFromClass( $t.attr("class") ) || crudeHTMLcheck( code ),
 			linenum = $t.attr("data-linenum") || 1,
+			gutter = $t.attr("data-linenum") === undefined ? false : true,
 			brush = nsh.getLanguage( lang ) || nsh.getLanguage( "js" ),
 			highlighted = nsh.highlight( code, brush, {
-				"first-line": linenum
+				"first-line": linenum,
+				gutter: gutter
 			});
 			$t.parent().replaceWith( $(highlighted).removeAttr("id") );
 		});
