@@ -118,8 +118,8 @@ grunt.registerHelper("syntax-highlight", function( options, callback ) {
 	}
 
 	var html = options.file ? grunt.file.read( options.file ) : options.cmd.stdout,
-	$ = cheerio.load( html ),
-	highlight = $("pre > code");
+		$ = cheerio.load( html ),
+		highlight = $("pre > code");
 	try {
 		highlight.each( function( index, el ) {
 			var $t = $(this),
@@ -132,14 +132,12 @@ grunt.registerHelper("syntax-highlight", function( options, callback ) {
 			});
 			$t.parent().replaceWith( $(highlighted).removeAttr("id") );
 		});
-	}
-	catch ( excp ) {
+	} catch ( excp ) {
 		callback( excp );
 		return;
 	}
 
 	callback( null, $.html() );
-
 });
 
 };
