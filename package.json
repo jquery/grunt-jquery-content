@@ -1,7 +1,7 @@
 {
   "name": "grunt-jquery-content",
   "description": "A collection for tasks for building the jQuery websites",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "homepage": "https://github.com/jzaefferer/grunt-jquery-content",
   "author": {
     "name": "Jörn Zaefferer",
@@ -25,7 +25,7 @@
     "node": "*"
   },
   "dependencies": {
-    "grunt": "0.3.9",
+    "grunt": "0.3.12",
     "grunt-wordpress": "1.0.2",
     "node-syntaxhighlighter": "0.7.x",
     "cheerio": "0.8.3",

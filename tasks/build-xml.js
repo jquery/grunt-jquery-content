@@ -10,7 +10,6 @@ module.exports = function(grunt) {
 
 var // modules
 	fs = require( "fs" ),
-	nsh = require( "node-syntaxhighlighter" ),
 	path = require( "path" ),
 	rimraf = require( "rimraf" ),
 	spawn = require( "child_process" ).spawn;
@@ -126,7 +125,7 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 				targetHTMLFileName = targetHTMLFileName.substr( 0, targetHTMLFileName.length - "xml".length ) + "html";
 
 				grunt.verbose.write( "Syntax highlighting " + targetHTMLFileName + "..." );
-				grunt.helper("syntax-highlight", {cmd: pass2result, target: targetHTMLFileName}, function( error, data ) {
+				grunt.helper("syntax-highlight", { content: pass2result }, function( error, data ) {
 
 					if ( error ) {
 						grunt.verbose.error();

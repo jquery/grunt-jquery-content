@@ -53,7 +53,7 @@ grunt.registerMultiTask( "build-pages", "Process html files as pages, include @p
 		}
 
 		grunt.verbose.write( "Syntax highlighting " + targetFileName + "..." );
-		grunt.helper("syntax-highlight", {file: targetFileName, target: targetFileName}, function( error, data ) {
+		grunt.helper("syntax-highlight", {file: targetFileName}, function( error, data ) {
 			if ( error ) {
 				grunt.verbose.error();
 				grunt.log.error( error );
@@ -121,7 +121,7 @@ grunt.registerHelper("syntax-highlight", function( options, callback ) {
 		return "";
 	}
 
-	var html = options.file ? grunt.file.read( options.file ) : options.cmd.stdout,
+	var html = options.file ? grunt.file.read( options.file ) : options.content,
 		$ = cheerio.load( html ),
 		highlight = $("pre > code");
 	try {
