@@ -1,11 +1,3 @@
-/*
- * grunt-jquery-content
- * https://github.com/jzaefferer/grunt-jquery-content
- *
- * Copyright (c) 2012 Jörn Zaefferer
- * Licensed under the MIT license.
- */
-
 module.exports = function(grunt) {
 
 function htmlEscape(text) {

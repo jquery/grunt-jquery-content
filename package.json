@@ -2,22 +2,21 @@
   "name": "grunt-jquery-content",
   "description": "A collection for tasks for building the jQuery websites",
   "version": "0.3.4",
-  "homepage": "https://github.com/jzaefferer/grunt-jquery-content",
+  "homepage": "https://github.com/jquery/grunt-jquery-content",
   "author": {
-    "name": "Jörn Zaefferer",
-    "email": "joern.zaefferer@gmail.com"
+    "name": "jQuery Foundation"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jzaefferer/grunt-jquery-content.git"
+    "url": "git://github.com/jquery/grunt-jquery-content.git"
   },
   "bugs": {
-    "url": "https://github.com/jzaefferer/grunt-jquery-content/issues"
+    "url": "https://github.com/jquery/grunt-jquery-content/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/jzaefferer/grunt-jquery-content/blob/master/LICENSE-MIT"
+      "url": "https://github.com/jquery/grunt-jquery-content/blob/master/LICENSE-MIT.txt"
     }
   ],
   "main": "grunt.js",
