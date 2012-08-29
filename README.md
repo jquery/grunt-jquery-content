@@ -4,7 +4,7 @@ A collection of tasks for building the jQuery websites
 
 ## build-pages
 
-This multi-task takes a list of html files, copies them to `[wordpress.dir]/posts/page`, processes @partial entries and highlights the syntax in each.
+This multi-task takes a list of html or markdown files, copies them to `[wordpress.dir]/posts/page`, processes @partial entries and highlights the syntax in each.
 
 ### @partial
 
@@ -40,5 +40,5 @@ other content
 ```
 
 ## License
-Copyright (c) 2012 Jörn Zaefferer
+Copyright (c) 2012 jQuery Foundation
 Licensed under the MIT license.

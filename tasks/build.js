@@ -19,7 +19,7 @@ var // modules
 	nsh = require( "node-syntaxhighlighter" ),
 	path = require( "path" );
 
-grunt.registerMultiTask( "build-pages", "Process html files as pages, include @partials and syntax higlight code snippets", function() {
+grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
 	var content,
 		task = this,
 		taskDone = task.async(),
