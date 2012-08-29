@@ -29,34 +29,34 @@ grunt.registerMultiTask( "build-pages", "Process html files as pages, include @p
 	grunt.file.mkdir( targetDir );
 
 	grunt.utils.async.forEachSeries( files, function( fileName, fileDone ) {
-		var targetFileName = targetDir + fileName.replace( /^.+?\//, "" );
+		var post = grunt.helper( "wordpress-parse-post", fileName ),
+			content = post.content,
+			fileType = /\.(\w+)$/.exec( fileName )[ 1 ],
+			targetFileName = targetDir + fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ) + ".html";
 
 		grunt.verbose.write( "Processing " + fileName + "..." );
-		grunt.file.copy( fileName, targetFileName, {
-			process: function( content ) {
-				return content.replace(/@partial\((.+)\)/g, function(match, input) {
-					return htmlEscape( grunt.file.read( input ) );
-				});
-			}
+		delete post.content;
+
+		// Convert markdown to HTML
+		if ( fileType === "md" ) {
+			content = grunt.helper( "parse-markdown", content, post.toc );
+			delete post.toc;
+		}
+
+		// Replace partials
+		content = content.replace( /@partial\((.+)\)/g, function( match, input ) {
+			return htmlEscape( grunt.file.read( input ) );
 		});
 
-		if ( grunt.option( "nohighlight" ) ) {
-			fileDone();
-			return;
+		// Syntax highlight code blocks
+		if ( !grunt.option( "nohighlight" ) ) {
+			content = grunt.helper( "syntax-highlight", { content: content } );
 		}
 
-		grunt.verbose.write( "Syntax highlighting " + targetFileName + "..." );
-		try {
-			content = grunt.helper( "syntax-highlight", { file: targetFileName } );
-		} catch( error ) {
-			grunt.verbose.error();
-			grunt.log.error( error );
-			fileDone();
-			return;
-		}
-		grunt.verbose.ok();
+		// Write file
+		grunt.file.write( targetFileName,
+			"<script>" + JSON.stringify( post ) + "</script>\n" + content );
 
-		grunt.file.write( targetFileName, content );
 		fileDone();
 	}, function() {
 		if ( task.errorCount ) {
@@ -134,6 +134,35 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 	});
 
 	return $.html();
+});
+
+grunt.registerHelper( "parse-markdown", function( src, generateToc ) {
+	var toc = "",
+		marked = require( "marked" ),
+		tokens = marked.lexer( src );
+
+	if ( generateToc ) {
+		tokens.filter(function( item ) {
+			if ( item.type !== "heading" ) {
+				return false;
+			}
+
+			item.tocText = item.text;
+			item.tocId = item.text
+				.replace( /\W+/g, "-" )
+				.replace( /^-+|-+$/, "" )
+				.toLowerCase();
+			item.text += " <a href='#" + item.tocId + "' id='" + item.tocId + "'>link</a>";
+			return true;
+		}).forEach(function( item ) {
+			toc += Array( (item.depth - 1) * 2 + 1 ).join( " " ) + "* " +
+				"[" + item.tocText + "](#" + item.tocId + ")\n";
+		});
+
+		tokens = marked.lexer( toc ).concat( tokens );
+	}
+
+	return marked.parser( tokens );
 });
 
 };
