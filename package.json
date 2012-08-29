@@ -1,7 +1,7 @@
 {
   "name": "grunt-jquery-content",
   "description": "A collection for tasks for building the jQuery websites",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "homepage": "https://github.com/jquery/grunt-jquery-content",
   "author": {
     "name": "jQuery Foundation"
