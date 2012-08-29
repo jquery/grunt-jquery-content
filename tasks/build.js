@@ -28,7 +28,8 @@ var // modules
 	path = require( "path" );
 
 grunt.registerMultiTask( "build-pages", "Process html files as pages, include @partials and syntax higlight code snippets", function() {
-	var task = this,
+	var content,
+		task = this,
 		taskDone = task.async(),
 		files = this.data,
 		targetDir = grunt.config( "wordpress.dir" ) + "/posts/page/";
@@ -53,19 +54,18 @@ grunt.registerMultiTask( "build-pages", "Process html files as pages, include @p
 		}
 
 		grunt.verbose.write( "Syntax highlighting " + targetFileName + "..." );
-		grunt.helper("syntax-highlight", {file: targetFileName}, function( error, data ) {
-			if ( error ) {
-				grunt.verbose.error();
-				grunt.log.error( error );
-				fileDone();
-				return;
-			}
-			grunt.verbose.ok();
-
-			grunt.file.write( targetFileName, data );
-
+		try {
+			content = grunt.helper( "syntax-highlight", { file: targetFileName } );
+		} catch( error ) {
+			grunt.verbose.error();
+			grunt.log.error( error );
 			fileDone();
-		});
+			return;
+		}
+		grunt.verbose.ok();
+
+		grunt.file.write( targetFileName, content );
+		fileDone();
 	}, function() {
 		if ( task.errorCount ) {
 			grunt.warn( "Task \"" + task.name + "\" failed." );
@@ -99,12 +99,12 @@ grunt.registerMultiTask( "build-resources", "Copy resources", function() {
 	});
 });
 
-grunt.registerHelper("syntax-highlight", function( options, callback ) {
+grunt.registerHelper( "syntax-highlight", function( options ) {
 
 	// receives the innerHTML of a <code> element and if the first character
-	// is an encoded left angle bracket, we'll "conclude" the "language" is html
-	function crudeHTMLcheck ( input ) {
-		return input.trim().indexOf("&lt;") === 0 ? "html" : "";
+	// is an encoded left angle bracket, we'll assume the language is html
+	function crudeHtmlCheck ( input ) {
+		return input.trim().indexOf( "&lt;" ) === 0 ? "html" : "";
 	}
 
 	// when parsing the class attribute, make sure a class matches an actually
@@ -113,7 +113,7 @@ grunt.registerHelper("syntax-highlight", function( options, callback ) {
 		str = str || "";
 		var classes = str.split(" "),
 		c = classes.length;
-		while (--c) {
+		while ( --c ) {
 			if ( nsh.getLanguage( classes[c] ) ) {
 				return classes[c];
 			}
@@ -122,14 +122,15 @@ grunt.registerHelper("syntax-highlight", function( options, callback ) {
 	}
 
 	var html = options.file ? grunt.file.read( options.file ) : options.content,
-		$ = cheerio.load( html ),
-		highlight = $("pre > code");
-	try {
-		highlight.each( function( index, el ) {
-			var $t = $(this),
+		$ = cheerio.load( html );
+
+	$( "pre > code" ).each( function( index, el ) {
+		var $t = $( this ),
 			code = $t.html(),
-			lang = $t.attr("data-lang") || getLanguageFromClass( $t.attr("class") ) || crudeHTMLcheck( code ),
-			linenumAttr = $t.attr("data-linenum"),
+			lang = $t.attr( "data-lang" ) ||
+				getLanguageFromClass( $t.attr( "class" ) ) ||
+				crudeHtmlCheck( code ),
+			linenumAttr = $t.attr( "data-linenum" ),
 			linenum = (linenumAttr === "true" ? 1 : linenumAttr) || 1,
 			gutter = linenumAttr === undefined ? false : true,
 			brush = nsh.getLanguage( lang ) || nsh.getLanguage( "js" ),
@@ -137,14 +138,10 @@ grunt.registerHelper("syntax-highlight", function( options, callback ) {
 				"first-line": linenum,
 				gutter: gutter
 			});
-			$t.parent().replaceWith( $(highlighted).removeAttr("id") );
-		});
-	} catch ( excp ) {
-		callback( excp );
-		return;
-	}
+		$t.parent().replaceWith( $( highlighted ).removeAttr( "id" ) );
+	});
 
-	callback( null, $.html() );
+	return $.html();
 });
 
 };
