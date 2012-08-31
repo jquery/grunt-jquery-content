@@ -104,7 +104,7 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 			grunt.utils.spawn({
 				cmd: "xsltproc",
 				args: [ "--xinclude", "entries2html.xsl", targetXMLFileName ]
-			}, function( err, pass2result ) {
+			}, function( err, content ) {
 				if ( err ) {
 					grunt.verbose.error();
 					grunt.log.error( err );
@@ -116,21 +116,15 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 				var targetHTMLFileName = targetDir + path.basename( fileName );
 				targetHTMLFileName = targetHTMLFileName.substr( 0, targetHTMLFileName.length - "xml".length ) + "html";
 
-				grunt.verbose.write( "Syntax highlighting " + targetHTMLFileName + "..." );
-				grunt.helper("syntax-highlight", { content: pass2result }, function( error, data ) {
 
-					if ( error ) {
-						grunt.verbose.error();
-						grunt.log.error( error );
-						fileDone();
-						return;
-					}
-					grunt.verbose.ok();
+				// Syntax highlight code blocks
+				if ( !grunt.option( "nohighlight" ) ) {
+					content = grunt.helper( "syntax-highlight", { content: content } );
+				}
 
-					grunt.file.write( targetHTMLFileName, data );
+				grunt.file.write( targetHTMLFileName, content );
 
-					fileDone();
-				});
+				fileDone();
 			});
 		});
 	}, function() {
