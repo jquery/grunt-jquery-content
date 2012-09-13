@@ -1,9 +1,7 @@
 module.exports = function( grunt ) {
 
 var fs = require( "fs" ),
-	path = require( "path" ),
-	rimraf = require( "rimraf" ),
-	spawn = require( "child_process" ).spawn;
+	path = require( "path" );
 
 grunt.registerMultiTask( "xmllint", "Lint xml files", function() {
 	var task = this,
