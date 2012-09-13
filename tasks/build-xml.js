@@ -1,7 +1,6 @@
-module.exports = function(grunt) {
+module.exports = function( grunt ) {
 
-var // modules
-	fs = require( "fs" ),
+var fs = require( "fs" ),
 	path = require( "path" ),
 	rimraf = require( "rimraf" ),
 	spawn = require( "child_process" ).spawn;
@@ -77,17 +76,16 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 	var task = this,
 		taskDone = task.async(),
 		files = this.data,
-		// TODO make `entry` a custom post type instead of (ab)using `post`?
 		targetDir = grunt.config( "wordpress.dir" ) + "/posts/post/";
 
 	grunt.file.mkdir( targetDir );
 
 	grunt.utils.async.forEachSeries( files, function( fileName, fileDone ) {
-		grunt.verbose.write( "Transforming (pass 1: preproc-xinclude.xsl) " + fileName + "..." );
+		grunt.verbose.write( "Transforming " + fileName + "..." );
 		grunt.utils.spawn({
 			cmd: "xsltproc",
-			args: [ "preproc-xinclude.xsl", fileName ]
-		}, function( err, pass1result ) {
+			args: [ "--xinclude", "entries2html.xsl", fileName ]
+		}, function( err, content ) {
 			if ( err ) {
 				grunt.verbose.error();
 				grunt.log.error( err );
@@ -96,36 +94,15 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 			}
 			grunt.verbose.ok();
 
-			var targetXMLFileName = "entries_tmp/" + path.basename( fileName );
+			var targetFileName = targetDir + path.basename( fileName, ".xml" ) + ".html";
 
-			grunt.file.write( targetXMLFileName, pass1result );
+			// Syntax highlight code blocks
+			if ( !grunt.option( "nohighlight" ) ) {
+				content = grunt.helper( "syntax-highlight", { content: content } );
+			}
 
-			grunt.verbose.write( "Transforming (pass 2: entries2html.xsl) " + fileName + "..." );
-			grunt.utils.spawn({
-				cmd: "xsltproc",
-				args: [ "--xinclude", "entries2html.xsl", targetXMLFileName ]
-			}, function( err, content ) {
-				if ( err ) {
-					grunt.verbose.error();
-					grunt.log.error( err );
-					fileDone();
-					return;
-				}
-				grunt.verbose.ok();
-
-				var targetHTMLFileName = targetDir + path.basename( fileName );
-				targetHTMLFileName = targetHTMLFileName.substr( 0, targetHTMLFileName.length - "xml".length ) + "html";
-
-
-				// Syntax highlight code blocks
-				if ( !grunt.option( "nohighlight" ) ) {
-					content = grunt.helper( "syntax-highlight", { content: content } );
-				}
-
-				grunt.file.write( targetHTMLFileName, content );
-
-				fileDone();
-			});
+			grunt.file.write( targetFileName, content );
+			fileDone();
 		});
 	}, function() {
 		if ( task.errorCount ) {
@@ -133,21 +110,31 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 			taskDone();
 			return;
 		}
-		rimraf.sync( "entries_tmp" );
+
 		grunt.log.writeln( "Built " + files.length + " entries." );
 		taskDone();
 	});
 });
 
 grunt.registerTask( "build-xml-categories", function() {
-	var task = this,
-		taskDone = task.async(),
-		categories = {},
-		outFilename = grunt.config( "wordpress.dir" ) + "/taxonomies.json";
+	var taskDone = this.async();
+
+	grunt.utils.spawn({
+		cmd: "xsltproc",
+		args: [ "--output", "taxonomies.xml",
+			grunt.task.getFile( "jquery-xml/cat2tax.xsl" ), "categories.xml" ]
+	}, function( err, result ) {
+		if ( err ) {
+			grunt.verbose.error();
+			grunt.log.error( err );
+			taskDone();
+			return;
+		}
 
 		grunt.utils.spawn({
 			cmd: "xsltproc",
-			args: [ "--output", "taxonomies.xml", "cat2tax.xsl", "categories.xml" ]
+			args: [ "--output", grunt.config( "wordpress.dir" ) + "/taxonomies.json",
+				grunt.task.getFile( "jquery-xml/xml2json.xsl" ), "taxonomies.xml" ]
 		}, function( err, result ) {
 			if ( err ) {
 				grunt.verbose.error();
@@ -155,20 +142,45 @@ grunt.registerTask( "build-xml-categories", function() {
 				taskDone();
 				return;
 			}
-			grunt.utils.spawn({
-				cmd: "xsltproc",
-				args: [ "--output", outFilename, "xml2json.xsl", "taxonomies.xml" ]
-			}, function( err, result ) {
-			if ( err ) {
-				grunt.verbose.error();
-				grunt.log.error( err );
-				taskDone();
-				return;
-			}
+
 			fs.unlinkSync( "taxonomies.xml" );
 			grunt.verbose.ok();
 			taskDone();
 		});
+	});
+});
+
+grunt.registerTask( "build-xml-full", function() {
+	var taskDone = this.async();
+
+	grunt.file.copy( grunt.task.getFile( "jquery-xml/all-entries.xml" ), "all-entries.xml", {
+		process: function( content ) {
+			return content.replace( "<!--entries-->",
+				grunt.file.expandFiles( "entries/*.xml" ).map(function( entry ) {
+					return "<entry file=\"" + entry + "\"/>";
+				}).join( "\n" ) );
+		}
+	});
+
+	grunt.utils.spawn({
+		cmd: "xsltproc",
+		args: [ "--xinclude", "--path", process.cwd(),
+			// "--output", grunt.config( "wordpress.dir" ) + "/resources/api.xml",
+			grunt.task.getFile( "jquery-xml/all-entries.xsl" ), "all-entries.xml" ]
+	}, function( err, result ) {
+		// For some reason using --output with xsltproc kills the --xinclude option,
+		// so we let it write to stdout, then save it to a file
+		grunt.file.write( grunt.config( "wordpress.dir" ) + "/resources/api.xml", result );
+		fs.unlinkSync( "all-entries.xml" );
+
+		if ( err ) {
+			grunt.verbose.error();
+			grunt.log.error( err );
+			taskDone( false );
+			return;
+		}
+
+		taskDone();
 	});
 });
 
