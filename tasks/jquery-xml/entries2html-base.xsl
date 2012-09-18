@@ -186,9 +186,7 @@
 				<span><xsl:value-of select="title"/></span>
 			</xsl:otherwise>
 		</xsl:choose>
-		<xsl:if test="./added">
-			<span class="versionAdded">version added: <xsl:value-of select="added"/></span>
-		</xsl:if>
+		<xsl:call-template name="version-details"/>
 	</h2>
 </xsl:template>
 
@@ -218,12 +216,7 @@
 		<li class="signature">
 			<h4 class="name">
 				<xsl:if test="signature/added">
-					<span class="versionAdded">
-						version added:
-						<a href="/category/version/{signature/added}/">
-							<xsl:value-of select="signature/added"/>
-						</a>
-					</span>
+					<xsl:call-template name="version-details" select="signature"/>
 				</xsl:if>
 				<xsl:text>jQuery( "</xsl:text><xsl:value-of select="sample"/><xsl:text>" )</xsl:text>
 			</h4>
@@ -243,12 +236,7 @@
 		<li class="signature">
 			<h4 class="name">
 				<xsl:if test="signature/added">
-					<span class="versionAdded">
-						version added:
-						<a href="/category/version/{signature/added}/">
-							<xsl:value-of select="added"/>
-						</a>
-					</span>
+					<xsl:call-template name="version-details" select="signature"/>
 				</xsl:if>
 				<xsl:value-of select="@name"/>
 			</h4>
@@ -278,14 +266,7 @@
 				</xsl:attribute>
 
 				<h4 class="name">
-					<xsl:if test="./added">
-						<span class="versionAdded">
-							version added:
-							<a href="/category/version/{added}/">
-								<xsl:value-of select="added"/>
-							</a>
-						</span>
-					</xsl:if>
+					<xsl:call-template name="version-details"/>
 					<xsl:call-template name="method-signature">
 						<xsl:with-param name="method-name" select="$entry-name"/>
 						<xsl:with-param name="dot" select="$method-prefix-dot"/>
@@ -331,7 +312,9 @@
 						<xsl:apply-templates select="desc">
 							<xsl:with-param name="entry-name" select="$entry-name"/>
 						</xsl:apply-templates>
-						<xsl:call-template name="version-details"/>
+						<xsl:call-template name="version-details">
+							<xsl:with-param name="parens" select="true()"/>
+						</xsl:call-template>
 					</div>
 					<xsl:if test="type/desc">
 						<strong>Multiple types supported:</strong>
@@ -412,12 +395,7 @@
 		<li class="signature">
 			<h4 class="name">
 				<xsl:if test="signature/added">
-					<span class="versionAdded">
-						version added:
-						<a href="/category/version/{signature/added}/">
-							<xsl:value-of select="added"/>
-						</a>
-					</span>
+					<xsl:call-template name="version-details" select="signature"/>
 				</xsl:if>
 				<xsl:value-of select="@name"/>
 			</h4>
@@ -662,7 +640,9 @@
 		<div>Type: <xsl:call-template name="render-types"/></div>
 		<div>
 			<xsl:apply-templates select="desc"/>
-			<xsl:call-template name="version-details"/>
+			<xsl:call-template name="version-details">
+				<xsl:with-param name="parens" select="true()"/>
+			</xsl:call-template>
 		</div>
 		<xsl:if test="property">
 			<ul>
@@ -673,44 +653,66 @@
 </xsl:template>
 
 <xsl:template name="version-details">
-	<xsl:if test="@added">
-		<xsl:text> </xsl:text>
-		<xsl:choose>
-			<xsl:when test="$version-category-links">
-				<strong>(added <a href="/category/version/{@added}/">
-					<xsl:value-of select="@added"/>
-				</a>)</strong>
-			</xsl:when>
-			<xsl:otherwise>
-				<strong>(added <xsl:value-of select="@added"/>)</strong>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:if>
-	<xsl:if test="@deprecated">
-		<xsl:text> </xsl:text>
-		<xsl:choose>
-			<xsl:when test="$version-category-links">
-				<strong>(deprecated <a href="/category/version/{@deprecated}/">
-					<xsl:value-of select="@deprecated"/>
-				</a>)</strong>
-			</xsl:when>
-			<xsl:otherwise>
-				<strong>(deprecated <xsl:value-of select="@deprecated"/>)</strong>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:if>
-	<xsl:if test="@removed">
-		<xsl:text> </xsl:text>
-		<xsl:choose>
-			<xsl:when test="$version-category-links">
-				<strong>(removed <a href="/category/version/{@removed}/">
-					<xsl:value-of select="@removed"/>
-				</a>)</strong>
-			</xsl:when>
-			<xsl:otherwise>
-				<strong>(removed <xsl:value-of select="@removed"/>)</strong>
-			</xsl:otherwise>
-		</xsl:choose>
+	<xsl:param name="parens" select="false()"/>
+	<xsl:variable name="added" select="@added | added/text()"/>
+	<xsl:variable name="deprecated" select="@deprecated | deprecated/text()"/>
+	<xsl:variable name="removed" select="@removed | removed/text()"/>
+
+	<xsl:if test="$added | $deprecated | $removed">
+		<span class="version-details">
+			<xsl:if test="$parens">
+				<xsl:text> (</xsl:text>
+			</xsl:if>
+			<xsl:text>version</xsl:text>
+			<xsl:if test="$added">
+				<xsl:text> added: </xsl:text>
+				<xsl:choose>
+					<xsl:when test="$version-category-links">
+						<a href="/category/version/{$added}/">
+							<xsl:value-of select="$added"/>
+						</a>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$added"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:if>
+			<xsl:if test="$deprecated">
+				<xsl:if test="$added">
+					<xsl:text>,</xsl:text>
+				</xsl:if>
+				<xsl:text> deprecated: </xsl:text>
+				<xsl:choose>
+					<xsl:when test="$version-category-links">
+						<a href="/category/version/{$deprecated}/">
+							<xsl:value-of select="$deprecated"/>
+						</a>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$deprecated"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:if>
+			<xsl:if test="$removed">
+				<xsl:if test="$added | $deprecated">
+					<xsl:text>,</xsl:text>
+				</xsl:if>
+				<xsl:text> removed: </xsl:text>
+				<xsl:choose>
+					<xsl:when test="$version-category-links">
+						<a href="/category/version/{$removed}/">
+							<xsl:value-of select="$removed"/>
+						</a>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$removed"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:if>
+			<xsl:if test="$parens">
+				<xsl:text>)</xsl:text>
+			</xsl:if>
+		</span>
 	</xsl:if>
 </xsl:template>
 
@@ -728,7 +730,9 @@
 		<xsl:apply-templates select="desc">
 			<xsl:with-param name="entry-name" select="$entry-name"/>
 		</xsl:apply-templates>
-		<xsl:call-template name="version-details"/>
+		<xsl:call-template name="version-details">
+			<xsl:with-param name="parens" select="true()"/>
+		</xsl:call-template>
 	</div>
 	<xsl:call-template name="arguments"/>
 </xsl:template>
