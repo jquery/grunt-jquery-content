@@ -147,12 +147,23 @@ grunt.registerHelper( "parse-markdown", function( src, generateToc ) {
 				return false;
 			}
 
+			// Store original text and create an id for linking
 			item.tocText = item.text;
 			item.tocId = item.text
 				.replace( /\W+/g, "-" )
 				.replace( /^-+|-+$/, "" )
 				.toLowerCase();
-			item.text += " <a href='#" + item.tocId + "' id='" + item.tocId + "'>link</a>";
+
+			// Convert to HTML
+			item.type = "html";
+			item.pre = false;
+
+			// Insert the link
+			item.text = "<h" + item.depth + " class='toc-linked'>" +
+				"<a href='#" + item.tocId + "' id='" + item.tocId + "' class='icon-link'>" +
+					"<span class='visuallyhidden'>link</span>" +
+				"</a> " + item.text + "</h" + item.depth + ">";
+
 			return true;
 		}).forEach(function( item ) {
 			toc += Array( (item.depth - 1) * 2 + 1 ).join( " " ) + "* " +
