@@ -635,7 +635,7 @@
 	<li>
 		<div>
 			<strong><xsl:value-of select="@name"/></strong>
-			<xsl:if test="@default"> (default: <xsl:value-of select="@default"/>)</xsl:if>
+			<xsl:if test="@default"> (default: <code><xsl:value-of select="@default"/></code>)</xsl:if>
 		</div>
 		<div>Type: <xsl:call-template name="render-types"/></div>
 		<div>
