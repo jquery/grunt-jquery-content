@@ -18,6 +18,7 @@ var // modules
 	cheerio = require( "cheerio" ),
 	nsh = require( "node-syntaxhighlighter" ),
 	path = require( "path" ),
+	_ = require( "lodash" ),
 	yaml = require( "js-yaml" );
 
 // Add a wrapper around wordpress-parse-post that supports YAML
@@ -45,12 +46,50 @@ grunt.registerHelper( "wordpress-parse-post-flex", function( path ) {
 	return grunt.helper( "wordpress-parse-post", path );
 });
 
+//Process a YAML order file and return an object of page slugs and their ordinal indices
+grunt.registerHelper( "read-order", function( orderFile, taskDone ) {
+	var order,
+		map = {},
+		index = 0;
+
+	try {
+		order = yaml.load( grunt.file.read( orderFile ) );
+		order.forEach( function(chapter) {
+			var article, title;
+
+			if ( _.isObject( chapter ) ) {
+				title = Object.keys( chapter )[ 0 ];
+				map[ title ] = ++index;
+
+				chapter[ title ].forEach( function( article ) {
+					map[ title + "/" + article ] = ++index;
+				}); 
+			} else {
+				map[ title ] = ++index;
+			}
+		});
+		return map;
+	} catch( error ) {
+		grunt.warn( "Invalid order file: " + orderFile );
+		taskDone();
+		return null;
+	}
+
+
+});
+
 grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
 	var content,
+		orderMap,
 		task = this,
 		taskDone = task.async(),
 		files = this.data,
-		targetDir = grunt.config( "wordpress.dir" ) + "/posts/page/";
+		targetDir = grunt.config( "wordpress.dir" ) + "/posts/page/",
+		orderFile = grunt.config( "wordpress.order" );
+
+		if ( orderFile ) {
+			orderMap = grunt.helper( "read-order", orderFile, taskDone );
+		}
 
 	grunt.file.mkdir( targetDir );
 
@@ -58,7 +97,20 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 		var post = grunt.helper( "wordpress-parse-post-flex", fileName ),
 			content = post.content,
 			fileType = /\.(\w+)$/.exec( fileName )[ 1 ],
-			targetFileName = targetDir + fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ) + ".html";
+			targetSlug = fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ),
+			targetFileName = targetDir + targetSlug + ".html";
+		
+		// If an order file was specified, set the menu_order,
+		// unless the page being processed isn't in the order file,
+		// in which case it shouldn't be published
+		if ( orderMap ) {
+			var menuOrder = orderMap[ targetSlug ];
+			if ( menuOrder ) {
+				post.menuOrder = menuOrder;
+			} else {
+				post.postStatus = "draft";
+			}
+		}
 
 		grunt.verbose.write( "Processing " + fileName + "..." );
 		delete post.content;

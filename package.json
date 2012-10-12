@@ -30,7 +30,8 @@
     "cheerio": "0.8.3",
     "rimraf": "2.0.2",
     "marked": "0.2.5",
-    "js-yaml": "1.0.2"
+    "js-yaml": "1.0.2",
+    "lodash": "0.8.x"
   },
   "keywords": [
     "gruntplugin"
