@@ -110,7 +110,7 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 			if ( menuOrder ) {
 				post.menuOrder = menuOrder;
 			} else {
-				post.postStatus = "draft";
+				post.status = "draft";
 			}
 		}
 
