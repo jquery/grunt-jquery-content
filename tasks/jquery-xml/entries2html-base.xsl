@@ -41,7 +41,9 @@
 		<xsl:variable name="number-examples" select="count(example)"/>
 
 		<xsl:if test="$entry-type='widget'">
-			<xsl:call-template name="widget-quick-nav"/>
+			<xsl:call-template name="widget-quick-nav">
+				<xsl:with-param name="entry-index" select="$entry-index"/>
+			</xsl:call-template>
 		</xsl:if>
 
 		<article>
@@ -58,6 +60,12 @@
 
 				<xsl:if test="normalize-space(longdesc/*)">
 					<div class="longdesc">
+						<xsl:attribute name="id">
+							<xsl:text>entry-longdesc</xsl:text>
+							<xsl:if test="$entry-index &gt; 1">
+								<xsl:text>-</xsl:text><xsl:value-of select="$entry-index - 1"/>
+							</xsl:if>
+						</xsl:attribute>
 						<xsl:apply-templates select="longdesc"/>
 					</div>
 				</xsl:if>
@@ -429,9 +437,34 @@
 </xsl:template>
 
 <xsl:template name="widget-quick-nav">
+	<xsl:param name="entry-index"/>
 	<section class="quick-nav">
 		<header>
-			<h2>QuickNav</h2>
+			<h2>
+				<xsl:text>QuickNav</xsl:text>
+				<xsl:if test="normalize-space(longdesc/*)">
+					<a>
+						<xsl:attribute name="href">
+							<xsl:text>#entry-longdesc</xsl:text>
+							<xsl:if test="$entry-index &gt; 1">
+								<xsl:text>-</xsl:text><xsl:value-of select="$entry-index - 1"/>
+							</xsl:if>
+						</xsl:attribute>
+						<xsl:text>Overview</xsl:text>
+					</a>
+				</xsl:if>
+				<xsl:if test="example">
+					<a>
+						<xsl:attribute name="href">
+							<xsl:text>#entry-examples</xsl:text>
+							<xsl:if test="$entry-index &gt; 1">
+								<xsl:text>-</xsl:text><xsl:value-of select="$entry-index - 1"/>
+							</xsl:if>
+						</xsl:attribute>
+						<xsl:text>Examples</xsl:text>
+					</a>
+				</xsl:if>
+			</h2>
 		</header>
 
 		<div class="quick-nav-section">
