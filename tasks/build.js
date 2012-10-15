@@ -45,6 +45,46 @@ grunt.registerHelper( "wordpress-parse-post-flex", function( path ) {
 	return grunt.helper( "wordpress-parse-post", path );
 });
 
+// Retrieves unique author history for file from git
+function retrieveGitAuthors( path, doneFunction ) {
+	var _ = grunt.utils._,
+		parseRE = /^(.*)<(.*)>$/; // could certainly be better. 
+
+	grunt.utils.spawn({
+			cmd: "git",
+			args: [ "log", "--format=%aN <%aE>", path ]
+		}, function( err, result ) {
+			var authors = [];
+			if ( err ) {
+				grunt.verbose.error();
+				grunt.log.error( err );
+				doneFunction(authors);
+				return;
+			}
+			
+			// make unique.
+			result.stdout.split(/\r?\n/g).forEach(function(line) {
+				if (_.contains(authors, line)) {
+					return;
+				}
+				authors.push(line);
+			});
+			
+			// make object { name: 'name', author: 'author' }
+			authors.forEach(function(str, idx) {
+				var m;
+				if (m = parseRE.exec(str)) {
+					authors[idx] = { name: m[1], email: m[2] };
+				}
+				else {
+					authors[idx] = { name: str };
+				}
+			});
+			
+			doneFunction(authors);
+		});
+}
+
 // Process a YAML order file and return an object of page slugs and their ordinal indices
 grunt.registerHelper( "read-order", function( orderFile ) {
 	var order,
@@ -101,6 +141,7 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 			targetSlug = fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ),
 			targetFileName = targetDir + targetSlug + ".html";
 
+		
 		// If an order file was specified, set the menuOrder,
 		// unless the page being processed isn't in the order file,
 		// in which case it shouldn't be published
@@ -116,27 +157,32 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 		grunt.verbose.write( "Processing " + fileName + "..." );
 		delete post.content;
 
-		// Convert markdown to HTML
-		if ( fileType === "md" ) {
-			content = grunt.helper( "parse-markdown", content, post.toc );
-			delete post.toc;
-		}
+		
+		retrieveGitAuthors( fileName, function( authors ) {
+			post.authors = authors;
 
-		// Replace partials
-		content = content.replace( /@partial\((.+)\)/g, function( match, input ) {
-			return htmlEscape( grunt.file.read( input ) );
+			// Convert markdown to HTML
+			if ( fileType === "md" ) {
+				content = grunt.helper( "parse-markdown", content, post.toc );
+				delete post.toc;
+			}
+	
+			// Replace partials
+			content = content.replace( /@partial\((.+)\)/g, function( match, input ) {
+				return htmlEscape( grunt.file.read( input ) );
+			});
+	
+			// Syntax highlight code blocks
+			if ( !grunt.option( "nohighlight" ) ) {
+				content = grunt.helper( "syntax-highlight", { content: content } );
+			}
+		
+			grunt.file.write( targetFileName,
+				"<script>" + JSON.stringify( post ) + "</script>\n" + content );
+	
+			fileDone();
 		});
-
-		// Syntax highlight code blocks
-		if ( !grunt.option( "nohighlight" ) ) {
-			content = grunt.helper( "syntax-highlight", { content: content } );
-		}
-
 		// Write file
-		grunt.file.write( targetFileName,
-			"<script>" + JSON.stringify( post ) + "</script>\n" + content );
-
-		fileDone();
 	}, function() {
 		if ( task.errorCount ) {
 			grunt.warn( "Task \"" + task.name + "\" failed." );
