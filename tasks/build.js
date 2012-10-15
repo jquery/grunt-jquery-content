@@ -45,8 +45,8 @@ grunt.registerHelper( "wordpress-parse-post-flex", function( path ) {
 	return grunt.helper( "wordpress-parse-post", path );
 });
 
-// Retrieves unique (?) author history for file from git
-grunt.registerHelper( "retrieve-git-authors", function( path, doneFunction ) {
+// Retrieves unique author history for file from git
+function retrieveGitAuthors( path, doneFunction ) {
 	var _ = grunt.utils._,
 		parseRE = /^(.*)<(.*)>$/; // could certainly be better. 
 
@@ -61,6 +61,7 @@ grunt.registerHelper( "retrieve-git-authors", function( path, doneFunction ) {
 				doneFunction(authors);
 				return;
 			}
+			
 			// make unique.
 			result.stdout.split(/\r?\n/g).forEach(function(line) {
 				if (_.contains(authors, line)) {
@@ -82,7 +83,7 @@ grunt.registerHelper( "retrieve-git-authors", function( path, doneFunction ) {
 			
 			doneFunction(authors);
 		});
-});
+}
 
 // Process a YAML order file and return an object of page slugs and their ordinal indices
 grunt.registerHelper( "read-order", function( orderFile ) {
@@ -157,7 +158,7 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 		delete post.content;
 
 		
-		grunt.helper( "retrieve-git-authors", fileName, function( authors ) {
+		retrieveGitAuthors( fileName, function( authors ) {
 			post.authors = authors;
 
 			// Convert markdown to HTML
