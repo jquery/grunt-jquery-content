@@ -132,6 +132,12 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 			content = grunt.helper( "syntax-highlight", { content: content } );
 		}
 
+		post.customFields = post.customFields || [];
+		post.customFields.push({
+			key: "source_path",
+			value: fileName
+		});
+
 		// Write file
 		grunt.file.write( targetFileName,
 			"<script>" + JSON.stringify( post ) + "</script>\n" + content );
