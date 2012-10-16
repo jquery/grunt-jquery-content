@@ -629,6 +629,11 @@
 			<xsl:apply-templates select="argument"/>
 		</ul>
 	</xsl:if>
+	<xsl:if test="not(argument)">
+		<ul>
+			<li><div class="null-signature">This method does not accept any arguments</div></li>
+		</ul>
+	</xsl:if>
 </xsl:template>
 <!-- arguments and properties are rendered the same way and nest -->
 <xsl:template match="argument|property">
