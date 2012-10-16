@@ -328,6 +328,23 @@
 							</xsl:for-each>
 						</ul>
 					</xsl:if>
+					<xsl:if test="@example-value">
+						<strong>Code examples:</strong>
+
+						<p>Initialize the <xsl:value-of select="$entry-name"/> with the <xsl:value-of select="@name"/> option specified:</p>
+						<pre><code>
+							$( ".selector" ).<xsl:value-of select="$entry-name"/>({ <xsl:value-of select="@name"/>: <xsl:value-of select="@example-value"/> });
+						</code></pre>
+
+						<p>Get or set the <xsl:value-of select="@name"/> option, after initialization:</p>
+						<pre><code>
+							// getter
+							var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$entry-name"/>( "option", "<xsl:value-of select="@name"/>" );
+
+							// setter
+							$( ".selector" ).<xsl:value-of select="$entry-name"/>( "option", "<xsl:value-of select="@name"/>", <xsl:value-of select="@example-value"/> );
+						</code></pre>
+					</xsl:if>
 					<xsl:apply-templates select="example">
 						<xsl:with-param name="number-examples" select="count(example)"/>
 					</xsl:apply-templates>
