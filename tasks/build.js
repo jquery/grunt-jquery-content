@@ -203,7 +203,7 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 
 	$( "pre > code" ).each( function( index, el ) {
 		var $t = $( this ),
-			code = $t.html(),
+			code = $t.text(),
 			lang = $t.attr( "data-lang" ) ||
 				getLanguageFromClass( $t.attr( "class" ) ) ||
 				crudeHtmlCheck( code ),
