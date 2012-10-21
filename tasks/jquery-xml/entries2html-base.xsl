@@ -213,21 +213,23 @@
 
 <xsl:template name="entry-body-selector">
 	<ul class="signatures">
-		<li class="signature">
-			<h4 class="name">
-				<xsl:if test="signature/added">
-					<xsl:call-template name="version-details" select="signature"/>
-				</xsl:if>
-				<xsl:text>jQuery( "</xsl:text><xsl:value-of select="sample"/><xsl:text>" )</xsl:text>
-			</h4>
+		<xsl:for-each select="signature">
+			<li class="signature">
+				<h4 class="name">
+					<xsl:if test="added">
+						<xsl:call-template name="version-details" select="../signature"/>
+					</xsl:if>
+					<xsl:text>jQuery( "</xsl:text><xsl:value-of select="sample|../sample"/><xsl:text>" )</xsl:text>
+				</h4>
 
-			<xsl:for-each select="signature/argument">
-				<p class="argument">
-					<strong><xsl:value-of select="@name"/>: </strong>
-					<xsl:copy-of select="desc/text()|desc/*"/>
-				</p>
-			</xsl:for-each>
-		</li>
+				<xsl:for-each select="argument">
+					<p class="argument">
+						<strong><xsl:value-of select="@name"/>: </strong>
+						<xsl:copy-of select="desc/text()|desc/*"/>
+					</p>
+				</xsl:for-each>
+			</li>
+		</xsl:for-each>
 	</ul>
 </xsl:template>
 
