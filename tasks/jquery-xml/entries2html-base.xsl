@@ -490,6 +490,38 @@
 				<div><a href="#event-{$name}"><xsl:value-of select="$name"/></a></div>
 			</xsl:for-each>
 		</div>
+
+		<xsl:if test="normalize-space(longdesc/*) or example">
+			<div class="quick-nav-section">
+				<h3>More</h3>
+				<xsl:if test="normalize-space(longdesc/*)">
+					<div>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>#entry-longdesc</xsl:text>
+								<xsl:if test="$entry-index &gt; 1">
+									<xsl:text>-</xsl:text><xsl:value-of select="$entry-index - 1"/>
+								</xsl:if>
+							</xsl:attribute>
+							Overview
+						</a>
+					</div>
+				</xsl:if>
+				<xsl:if test="example">
+					<div>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>#entry-examples</xsl:text>
+								<xsl:if test="$entry-index &gt; 1">
+									<xsl:text>-</xsl:text><xsl:value-of select="$entry-index - 1"/>
+								</xsl:if>
+							</xsl:attribute>
+							Examples
+						</a>
+					</div>
+				</xsl:if>
+			</div>
+		</xsl:if>
 	</section>
 </xsl:template>
 
