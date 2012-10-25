@@ -5,6 +5,8 @@
 <xsl:variable name="version-category-links" select="false()"/>
 <!-- Set this to false to prevent prefixing method names with a dot -->
 <xsl:variable name="method-prefix-dot" select="true()"/>
+<!-- Set this to false to prevent widget method examples from being generated -->
+<xsl:variable name="widget-method-examples" select="true()"/>
 
 <xsl:template match="/">
 	<script>{
@@ -372,7 +374,6 @@
 				<xsl:variable name="method-name" select="@name"/>
 				<xsl:variable name="method-position" select="position()"/>
 				<div id="method-{$method-name}">
-
 					<xsl:for-each select="signature | self::node()[count(signature) = 0]">
 						<div>
 							<xsl:attribute name="class">
@@ -387,6 +388,31 @@
 								<xsl:with-param name="method-name" select="$method-name"/>
 							</xsl:call-template>
 						</div>
+
+						<xsl:if test="$widget-method-examples">
+							<div>
+								<strong>Code examples:</strong>
+
+								<p>Invoke the <xsl:value-of select="@name"/> method:</p>
+								<pre><code>
+									<xsl:if test="@example-return-var">
+										<xsl:text>var </xsl:text>
+										<xsl:value-of select="@example-return-var"/>
+										<xsl:text> = </xsl:text>
+									</xsl:if>
+									<xsl:text>$( ".selector" ).</xsl:text>
+									<xsl:value-of select="$entry-name"/>
+									<xsl:text>( "</xsl:text>
+									<xsl:value-of select="$method-name"/>
+									<xsl:text>"</xsl:text>
+									<xsl:if test="@example-params">
+										<xsl:text>, </xsl:text>
+										<xsl:value-of select="@example-params"/>
+									</xsl:if>
+									<xsl:text> );</xsl:text>
+								</code></pre>
+							</div>
+						</xsl:if>
 					</xsl:for-each>
 				</div>
 			</xsl:for-each>
