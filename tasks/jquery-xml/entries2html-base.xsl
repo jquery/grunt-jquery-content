@@ -68,6 +68,13 @@
 								<xsl:text>-</xsl:text><xsl:value-of select="$entry-index - 1"/>
 							</xsl:if>
 						</xsl:attribute>
+
+						<xsl:if test="$entry-type='widget'">
+							<header>
+								<h2 class="underline">Overview</h2>
+							</header>
+						</xsl:if>
+
 						<xsl:apply-templates select="longdesc"/>
 					</div>
 				</xsl:if>
