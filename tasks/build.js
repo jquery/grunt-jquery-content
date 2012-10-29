@@ -189,10 +189,11 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 	function getLanguageFromClass( str ) {
 		str = str || "";
 		var classes = str.split(" "),
-		c = classes.length;
-		while ( --c ) {
-			if ( nsh.getLanguage( classes[c] ) ) {
-				return classes[c];
+			i = 0,
+			length = classes.length;
+		for ( ; i < length; i++ ) {
+			if ( nsh.getLanguage( classes[i].replace( /^lang-/, "" ) ) ) {
+				return classes[i].replace( /^lang-/, "" );
 			}
 		}
 		return "";
