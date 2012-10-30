@@ -252,7 +252,7 @@ grunt.registerHelper( "parse-markdown", function( src, generateToc ) {
 
 			return true;
 		}).forEach(function( item ) {
-			toc += Array( (item.depth - 1) * 2 + 1 ).join( " " ) + "* " +
+			toc += new Array( (item.depth - 1) * 2 + 1 ).join( " " ) + "* " +
 				"[" + item.tocText + "](#" + item.tocId + ")\n";
 		});
 
