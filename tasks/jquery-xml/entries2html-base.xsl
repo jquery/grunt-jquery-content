@@ -396,7 +396,7 @@
 							</xsl:call-template>
 						</div>
 
-						<xsl:if test="$widget-method-examples">
+						<xsl:if test="$widget-method-examples and not(../@suppress-examples)">
 							<div>
 								<strong>Code examples:</strong>
 
