@@ -208,7 +208,7 @@
 </xsl:template>
 
 <xsl:template name="entry-body">
-	<p class="desc"><strong>Description: </strong> <xsl:value-of select="desc"/></p>
+	<p class="desc"><strong>Description: </strong> <xsl:apply-templates select="desc"/></p>
 	<xsl:choose>
 		<xsl:when test="@type='selector'">
 			<xsl:call-template name="entry-body-selector"/>
