@@ -16,7 +16,7 @@
 			</xsl:call-template>,
 		"excerpt":
 			<xsl:call-template name="escape-string">
-				<xsl:with-param name="s" select="//entry[1]/desc/text()|//entry[1]/desc/*"/>
+				<xsl:with-param name="s" select="/entries/desc|//entry[1]/desc/text()|//entry[1]/desc/*"/>
 			</xsl:call-template>,
 		"termSlugs": {
 			"category": [
@@ -115,6 +115,7 @@
 </xsl:template>
 
 <xsl:template name="toc">
+	<xsl:apply-templates select="/entries/desc"/>
 	<div class="toc">
 		<h4><span>Contents:</span></h4>
 		<ul class="toc-list">
