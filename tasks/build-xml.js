@@ -1,4 +1,5 @@
 module.exports = function( grunt ) {
+"use strict";
 
 var fs = require( "fs" ),
 	path = require( "path" );
