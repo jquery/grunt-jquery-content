@@ -109,8 +109,6 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 			menuOrder = orderMap[ targetSlug ];
 			if ( menuOrder ) {
 				post.menuOrder = menuOrder;
-			} else {
-				post.status = "draft";
 			}
 		}
 
