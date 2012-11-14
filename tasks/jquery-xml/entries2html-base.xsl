@@ -16,7 +16,16 @@
 			</xsl:call-template>,
 		"excerpt":
 			<xsl:call-template name="escape-string">
-				<xsl:with-param name="s" select="/entries/desc|//entry[1]/desc/text()|//entry[1]/desc/*"/>
+				<xsl:with-param name="s">
+					<xsl:choose>
+						<xsl:when test="/entries/desc">
+							<xsl:apply-templates select="/entries/desc"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:apply-templates select="//entry[1]/desc"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:with-param>
 			</xsl:call-template>,
 		"termSlugs": {
 			"category": [
