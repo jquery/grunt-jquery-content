@@ -8,6 +8,9 @@
 <!-- Set this to false to prevent widget method examples from being generated -->
 <xsl:variable name="widget-method-examples" select="true()"/>
 
+<xsl:variable name="lowercase" select="'abcdefghijklmnopqrstuvwxyz'"/>
+<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
+
 <xsl:template match="/">
 	<script>{
 		"title":
@@ -400,7 +403,7 @@
 								</xsl:if>
 							</xsl:attribute>
 
-							<xsl:call-template name="widget-method-event">
+							<xsl:call-template name="widget-method">
 								<xsl:with-param name="entry-name" select="$entry-name"/>
 								<xsl:with-param name="method-name" select="$method-name"/>
 							</xsl:call-template>
@@ -450,9 +453,9 @@
 						</xsl:if>
 					</xsl:attribute>
 
-					<xsl:call-template name="widget-method-event">
+					<xsl:call-template name="widget-event">
 						<xsl:with-param name="entry-name" select="$entry-name"/>
-						<xsl:with-param name="method-name" select="@name"/>
+						<xsl:with-param name="event-name" select="@name"/>
 					</xsl:call-template>
 				</div>
 			</xsl:for-each>
@@ -816,7 +819,7 @@
 	</xsl:if>
 </xsl:template>
 
-<xsl:template name="widget-method-event">
+<xsl:template name="widget-method">
 	<xsl:param name="entry-name"/>
 	<xsl:param name="method-name"/>
 
@@ -835,6 +838,68 @@
 		</xsl:call-template>
 	</div>
 	<xsl:call-template name="arguments"/>
+</xsl:template>
+
+<xsl:template name="widget-event">
+	<xsl:param name="entry-name"/>
+	<xsl:param name="event-name"/>
+	<xsl:variable name="event-prefix">
+		<xsl:choose>
+			<xsl:when test="//entry/@event-prefix">
+				<xsl:value-of select="//entry/@event-prefix"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$entry-name"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	<xsl:variable name="event-type">
+		<xsl:choose>
+			<xsl:when test="$event-name = $event-prefix">
+				<xsl:value-of select="translate($event-name, $uppercase, $lowercase)"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$event-prefix"/>
+				<xsl:value-of select="translate($event-name, $uppercase, $lowercase)"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+
+	<h3>
+		<xsl:call-template name="method-signature">
+			<xsl:with-param name="method-name" select="$event-name"/>
+		</xsl:call-template>
+		<xsl:if test="@type">
+			<span class="returns">Type: <code><xsl:value-of select="$event-type"/></code></span>
+		</xsl:if>
+	</h3>
+	<div>
+		<xsl:apply-templates select="desc">
+			<xsl:with-param name="entry-name" select="$entry-name"/>
+		</xsl:apply-templates>
+		<xsl:call-template name="version-details">
+			<xsl:with-param name="parens" select="true()"/>
+		</xsl:call-template>
+	</div>
+	<xsl:call-template name="arguments"/>
+
+	<div>
+		<strong>Code examples:</strong>
+
+		<p>Initialize the <xsl:value-of select="$entry-name"/> with the <xsl:value-of select="@name"/> callback specified:</p>
+		<pre><code>
+			<xsl:text>$( ".selector" ).</xsl:text>
+			<xsl:value-of select="$entry-name"/>
+			<xsl:text>({&#xA;&#x9;</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>: function( event, ui ) {}&#xA;});</xsl:text>
+		</code></pre>
+
+		<p>Bind an event listener to the <xsl:value-of select="$event-type"/> event:</p>
+		<pre><code>
+			$( ".selector" ).on( "<xsl:value-of select="$event-type"/>", function( event, ui ) {} );
+		</code></pre>
+	</div>
 </xsl:template>
 
 <!-- <desc> and <longdesc> support <placeholder name="foo"> to replace the
