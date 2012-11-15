@@ -869,9 +869,7 @@
 		<xsl:call-template name="method-signature">
 			<xsl:with-param name="method-name" select="$event-name"/>
 		</xsl:call-template>
-		<xsl:if test="@type">
-			<span class="returns">Type: <code><xsl:value-of select="$event-type"/></code></span>
-		</xsl:if>
+		<span class="returns">Type: <code><xsl:value-of select="$event-type"/></code></span>
 	</h3>
 	<div>
 		<xsl:apply-templates select="desc">
