@@ -415,21 +415,28 @@
 
 								<p>Invoke the <xsl:value-of select="@name"/> method:</p>
 								<pre><code>
-									<xsl:if test="@example-return-var">
-										<xsl:text>var </xsl:text>
-										<xsl:value-of select="@example-return-var"/>
-										<xsl:text> = </xsl:text>
-									</xsl:if>
-									<xsl:text>$( ".selector" ).</xsl:text>
-									<xsl:value-of select="$entry-name"/>
-									<xsl:text>( "</xsl:text>
-									<xsl:value-of select="$method-name"/>
-									<xsl:text>"</xsl:text>
-									<xsl:if test="@example-params">
-										<xsl:text>, </xsl:text>
-										<xsl:value-of select="@example-params"/>
-									</xsl:if>
-									<xsl:text> );</xsl:text>
+									<xsl:choose>
+										<xsl:when test="example">
+											<xsl:value-of select="example"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:if test="@example-return-var">
+												<xsl:text>var </xsl:text>
+												<xsl:value-of select="@example-return-var"/>
+												<xsl:text> = </xsl:text>
+											</xsl:if>
+											<xsl:text>$( ".selector" ).</xsl:text>
+											<xsl:value-of select="$entry-name"/>
+											<xsl:text>( "</xsl:text>
+											<xsl:value-of select="$method-name"/>
+											<xsl:text>"</xsl:text>
+											<xsl:if test="@example-params">
+												<xsl:text>, </xsl:text>
+												<xsl:value-of select="@example-params"/>
+											</xsl:if>
+											<xsl:text> );</xsl:text>
+										</xsl:otherwise>
+									</xsl:choose>
 								</code></pre>
 							</div>
 						</xsl:if>
