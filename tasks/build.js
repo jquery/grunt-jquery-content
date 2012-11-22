@@ -60,14 +60,14 @@ grunt.registerHelper( "read-order", function( orderFile ) {
 	}
 
 
-	function flatten(item, folder) {
+	function flatten( item, folder ) {
 		var title,
 		path = folder ? [ folder ] : [];
 
 		if ( grunt.utils._.isObject( item ) ) {
 			title = Object.keys( item )[ 0 ];
 			path.push( title );
-			path = path.join("/");
+			path = path.join( "/" );
 			map[ path ] = ++index;
 
 			item[ title ].forEach(function( item ) {
@@ -75,10 +75,10 @@ grunt.registerHelper( "read-order", function( orderFile ) {
 			});
 		} else {
 			path.push( item );
-			map[ path.join("/") ] = ++index;
+			map[ path.join( "/" ) ] = ++index;
 		}
 	}
-	order.forEach( function( item ) {
+	order.forEach(function( item ) {
 		flatten( item );
 	});
 	return map;
