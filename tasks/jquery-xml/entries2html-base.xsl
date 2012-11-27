@@ -54,12 +54,6 @@
 		<xsl:variable name="entry-pos" select="concat($entry-name-trans,$entry-index)"/>
 		<xsl:variable name="number-examples" select="count(example)"/>
 
-		<xsl:if test="$entry-type='widget'">
-			<xsl:call-template name="widget-quick-nav">
-				<xsl:with-param name="entry-index" select="$entry-index"/>
-			</xsl:call-template>
-		</xsl:if>
-
 		<article>
 			<xsl:attribute name="id">
 				<xsl:value-of select="$entry-pos"/>
@@ -70,7 +64,7 @@
 
 			<xsl:call-template name="entry-title"/>
 			<div class="entry-wrapper">
-				<xsl:call-template name="entry-body"/>
+				<xsl:call-template name="entry-signature"/>
 
 				<xsl:if test="normalize-space(longdesc/*)">
 					<div class="longdesc">
@@ -80,12 +74,6 @@
 								<xsl:text>-</xsl:text><xsl:value-of select="$entry-index - 1"/>
 							</xsl:if>
 						</xsl:attribute>
-
-						<xsl:if test="$entry-type='widget'">
-							<header>
-								<h2 class="underline">Overview</h2>
-							</header>
-						</xsl:if>
 
 						<xsl:apply-templates select="longdesc"/>
 					</div>
@@ -101,6 +89,8 @@
 						</ul>
 					</div>
 				</xsl:if>
+
+				<xsl:call-template name="entry-body"/>
 
 				<xsl:if test="example">
 					<section class="entry-examples">
@@ -220,28 +210,25 @@
 	</h2>
 </xsl:template>
 
-<xsl:template name="entry-body">
+<xsl:template name="entry-signature">
 	<p class="desc"><strong>Description: </strong> <xsl:apply-templates select="desc"/></p>
 	<xsl:choose>
 		<xsl:when test="@type='selector'">
-			<xsl:call-template name="entry-body-selector"/>
+			<xsl:call-template name="entry-signature-selector"/>
 		</xsl:when>
 		<xsl:when test="@type='property'">
-			<xsl:call-template name="entry-body-property"/>
+			<xsl:call-template name="entry-signature-property"/>
 		</xsl:when>
 		<xsl:when test="@type='method'">
-			<xsl:call-template name="entry-body-method"/>
-		</xsl:when>
-		<xsl:when test="@type='widget'">
-			<xsl:call-template name="entry-body-widget"/>
+			<xsl:call-template name="entry-signature-method"/>
 		</xsl:when>
 		<xsl:when test="@type='effect'">
-			<xsl:call-template name="entry-body-effect"/>
+			<xsl:call-template name="entry-signature-effect"/>
 		</xsl:when>
 	</xsl:choose>
 </xsl:template>
 
-<xsl:template name="entry-body-selector">
+<xsl:template name="entry-signature-selector">
 	<ul class="signatures">
 		<xsl:for-each select="signature">
 			<li class="signature">
@@ -263,7 +250,7 @@
 	</ul>
 </xsl:template>
 
-<xsl:template name="entry-body-property">
+<xsl:template name="entry-signature-property">
 	<ul class="signatures">
 		<li class="signature">
 			<h4 class="name">
@@ -282,7 +269,7 @@
 	</ul>
 </xsl:template>
 
-<xsl:template name="entry-body-method">
+<xsl:template name="entry-signature-method">
 	<xsl:variable name="entry-name" select="@name"/>
 	<xsl:variable name="entry-name-trans" select="translate($entry-name,'$., ()/{}','s---')"/>
 
@@ -311,8 +298,40 @@
 	</ul>
 </xsl:template>
 
+<xsl:template name="entry-signature-effect">
+	<ul class="signatures">
+		<li class="signature">
+			<h4 class="name">
+				<xsl:if test="signature/added">
+					<xsl:call-template name="version-details" select="signature"/>
+				</xsl:if>
+				<xsl:value-of select="@name"/>
+			</h4>
+
+			<xsl:if test="arguments">
+				<ul><xsl:for-each select="arguments/argument">
+					<xsl:apply-templates select="."/>
+				</xsl:for-each></ul>
+			</xsl:if>
+		</li>
+	</ul>
+</xsl:template>
+
+<xsl:template name="entry-body">
+	<xsl:choose>
+		<xsl:when test="@type='widget'">
+			<xsl:call-template name="entry-body-widget"/>
+		</xsl:when>
+	</xsl:choose>
+</xsl:template>
+
 <xsl:template name="entry-body-widget">
 	<xsl:variable name="entry-name" select="@name"/>
+	<xsl:variable name="entry-index" select="position()"/>
+
+	<xsl:call-template name="widget-quick-nav">
+		<xsl:with-param name="entry-index" select="$entry-index"/>
+	</xsl:call-template>
 
 	<xsl:if test="options">
 		<section id="options">
@@ -470,42 +489,12 @@
 	</xsl:if>
 </xsl:template>
 
-<xsl:template name="entry-body-effect">
-	<ul class="signatures">
-		<li class="signature">
-			<h4 class="name">
-				<xsl:if test="signature/added">
-					<xsl:call-template name="version-details" select="signature"/>
-				</xsl:if>
-				<xsl:value-of select="@name"/>
-			</h4>
-
-			<xsl:if test="arguments">
-				<ul><xsl:for-each select="arguments/argument">
-					<xsl:apply-templates select="."/>
-				</xsl:for-each></ul>
-			</xsl:if>
-		</li>
-	</ul>
-</xsl:template>
-
 <xsl:template name="widget-quick-nav">
 	<xsl:param name="entry-index"/>
-	<section class="quick-nav">
+	<section id="quick-nav">
 		<header>
 			<h2>
 				<xsl:text>QuickNav</xsl:text>
-				<xsl:if test="normalize-space(longdesc/*)">
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>#entry-longdesc</xsl:text>
-							<xsl:if test="$entry-index &gt; 1">
-								<xsl:text>-</xsl:text><xsl:value-of select="$entry-index - 1"/>
-							</xsl:if>
-						</xsl:attribute>
-						<xsl:text>Overview</xsl:text>
-					</a>
-				</xsl:if>
 				<xsl:if test="example">
 					<a>
 						<xsl:attribute name="href">
