@@ -56,19 +56,18 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 	grunt.file.mkdir( targetDir );
 
 	grunt.utils.async.forEachSeries( files, function( fileName, fileDone ) {
-		var post = grunt.helper( "wordpress-parse-post-flex", fileName ),
-			content = post.content,
+		var content,
+			post = grunt.helper( "wordpress-parse-post-flex", fileName ),
 			fileType = /\.(\w+)$/.exec( fileName )[ 1 ],
-			targetSlug = fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ),
-			targetFileName = targetDir + targetSlug + ".html";
+			targetFileName = targetDir +
+				fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ) + ".html";
 
 		grunt.verbose.write( "Processing " + fileName + "..." );
-		delete post.content;
 
 		// Invoke the pre-processor for custom functionality
-		post.__slug = targetSlug;
-		content = grunt.helper( "build-pages-preprocess", content, post );
-		delete post.__slug;
+		grunt.helper( "build-pages-preprocess", post, fileName );
+		content = post.content;
+		delete post.content;
 
 		// Convert markdown to HTML
 		if ( fileType === "md" ) {
@@ -109,9 +108,7 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 });
 
 // Default pre-processor is a no-op
-grunt.registerHelper( "build-pages-preprocess", function( content ) {
-	return content;
-});
+grunt.registerHelper( "build-pages-preprocess", function() {} );
 
 grunt.registerMultiTask( "build-resources", "Copy resources", function() {
 	var task = this,
