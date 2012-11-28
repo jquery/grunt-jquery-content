@@ -46,74 +46,29 @@ grunt.registerHelper( "wordpress-parse-post-flex", function( path ) {
 	return grunt.helper( "wordpress-parse-post", path );
 });
 
-// Process a YAML order file and return an object of page slugs and their ordinal indices
-grunt.registerHelper( "read-order", function( orderFile ) {
-	var order,
-		map = {},
-		index = 0;
-
-	try {
-		order = yaml.load( grunt.file.read( orderFile ) );
-	} catch( error ) {
-		grunt.warn( "Invalid order file: " + orderFile );
-		return null;
-	}
-
-	order.forEach(function(chapter) {
-		var article, title;
-
-		if ( grunt.utils._.isObject( chapter ) ) {
-			title = Object.keys( chapter )[ 0 ];
-			map[ title ] = ++index;
-
-			chapter[ title ].forEach(function( article ) {
-				map[ title + "/" + article ] = ++index;
-			});
-		} else {
-			map[ title ] = ++index;
-		}
-	});
-	return map;
-});
-
 grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
-	var content, orderMap,
+	var content,
 		task = this,
 		taskDone = task.async(),
 		files = this.data,
-		targetDir = grunt.config( "wordpress.dir" ) + "/posts/page/",
-		orderFile = grunt.config( "wordpress.order" );
-
-	if ( orderFile ) {
-		orderMap = grunt.helper( "read-order", orderFile );
-		if ( !orderMap ) {
-			taskDone( false );
-			return;
-		}
-	}
+		targetDir = grunt.config( "wordpress.dir" ) + "/posts/page/";
 
 	grunt.file.mkdir( targetDir );
 
 	grunt.utils.async.forEachSeries( files, function( fileName, fileDone ) {
-		var menuOrder,
-			post = grunt.helper( "wordpress-parse-post-flex", fileName ),
+		var post = grunt.helper( "wordpress-parse-post-flex", fileName ),
 			content = post.content,
 			fileType = /\.(\w+)$/.exec( fileName )[ 1 ],
 			targetSlug = fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ),
 			targetFileName = targetDir + targetSlug + ".html";
 
-		// If an order file was specified, set the menuOrder,
-		// unless the page being processed isn't in the order file,
-		// in which case it shouldn't be published
-		if ( orderMap ) {
-			menuOrder = orderMap[ targetSlug ];
-			if ( menuOrder ) {
-				post.menuOrder = menuOrder;
-			}
-		}
-
 		grunt.verbose.write( "Processing " + fileName + "..." );
 		delete post.content;
+
+		// Invoke the pre-processor for custom functionality
+		post.__slug = targetSlug;
+		content = grunt.helper( "build-pages-preprocess", content, post );
+		delete post.__slug;
 
 		// Convert markdown to HTML
 		if ( fileType === "md" ) {
@@ -151,6 +106,11 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 		grunt.log.writeln( "Built " + files.length + " pages." );
 		taskDone();
 	});
+});
+
+// Default pre-processor is a no-op
+grunt.registerHelper( "build-pages-preprocess", function( content ) {
+	return content;
 });
 
 grunt.registerMultiTask( "build-resources", "Copy resources", function() {
