@@ -65,37 +65,45 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 		grunt.verbose.write( "Processing " + fileName + "..." );
 
 		// Invoke the pre-processor for custom functionality
-		grunt.helper( "build-pages-preprocess", post, fileName );
-		content = post.content;
-		delete post.content;
+		grunt.utils.async.series([
+			function preprocess( continuation ) {
+				grunt.helper( "build-pages-preprocess", post, fileName, continuation );
+			},
+			function process( continuation ) {
+				content = post.content;
+				delete post.content;
 
-		// Convert markdown to HTML
-		if ( fileType === "md" ) {
-			content = grunt.helper( "parse-markdown", content, post.toc );
-			delete post.toc;
-		}
+				// Convert markdown to HTML
+				if ( fileType === "md" ) {
+					content = grunt.helper( "parse-markdown", content, post.toc );
+					delete post.toc;
+				}
 
-		// Replace partials
-		content = content.replace( /@partial\((.+)\)/g, function( match, input ) {
-			return htmlEscape( grunt.file.read( input ) );
-		});
+				// Replace partials
+				content = content.replace( /@partial\((.+)\)/g, function( match, input ) {
+					return htmlEscape( grunt.file.read( input ) );
+				});
 
-		// Syntax highlight code blocks
-		if ( !grunt.option( "nohighlight" ) ) {
-			content = grunt.helper( "syntax-highlight", { content: content } );
-		}
+				// Syntax highlight code blocks
+				if ( !grunt.option( "nohighlight" ) ) {
+					content = grunt.helper( "syntax-highlight", { content: content } );
+				}
 
-		post.customFields = post.customFields || [];
-		post.customFields.push({
-			key: "source_path",
-			value: fileName
-		});
+				post.customFields = post.customFields || [];
+				post.customFields.push({
+					key: "source_path",
+					value: fileName
+				});
 
-		// Write file
-		grunt.file.write( targetFileName,
-			"<script>" + JSON.stringify( post ) + "</script>\n" + content );
+				// Write file
+				grunt.file.write( targetFileName,
+					"<script>" + JSON.stringify( post ) + "</script>\n" + content );
 
-		fileDone();
+				fileDone();
+			}
+
+		]);
+
 	}, function() {
 		if ( task.errorCount ) {
 			grunt.warn( "Task \"" + task.name + "\" failed." );
@@ -107,8 +115,10 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 	});
 });
 
-// Default pre-processor is a no-op
-grunt.registerHelper( "build-pages-preprocess", function() {} );
+// Default pre-processor is a no-op, but needs to continue the async flow
+grunt.registerHelper( "build-pages-preprocess", function( post, fileName, continuation ) {
+	continuation();
+});
 
 grunt.registerMultiTask( "build-resources", "Copy resources", function() {
 	var task = this,
