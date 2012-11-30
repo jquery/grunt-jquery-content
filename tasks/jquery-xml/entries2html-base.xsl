@@ -426,39 +426,39 @@
 								<xsl:with-param name="entry-name" select="$entry-name"/>
 								<xsl:with-param name="method-name" select="$method-name"/>
 							</xsl:call-template>
+
+							<xsl:if test="$widget-method-examples and not(../@suppress-examples)">
+								<div>
+									<strong>Code examples:</strong>
+
+									<p>Invoke the <xsl:value-of select="@name"/> method:</p>
+									<pre><code>
+										<xsl:choose>
+											<xsl:when test="example">
+												<xsl:value-of select="example"/>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:if test="@example-return-var">
+													<xsl:text>var </xsl:text>
+													<xsl:value-of select="@example-return-var"/>
+													<xsl:text> = </xsl:text>
+												</xsl:if>
+												<xsl:text>$( ".selector" ).</xsl:text>
+												<xsl:value-of select="$entry-name"/>
+												<xsl:text>( "</xsl:text>
+												<xsl:value-of select="$method-name"/>
+												<xsl:text>"</xsl:text>
+												<xsl:if test="@example-params">
+													<xsl:text>, </xsl:text>
+													<xsl:value-of select="@example-params"/>
+												</xsl:if>
+												<xsl:text> );</xsl:text>
+											</xsl:otherwise>
+										</xsl:choose>
+									</code></pre>
+								</div>
+							</xsl:if>
 						</div>
-
-						<xsl:if test="$widget-method-examples and not(../@suppress-examples)">
-							<div>
-								<strong>Code examples:</strong>
-
-								<p>Invoke the <xsl:value-of select="@name"/> method:</p>
-								<pre><code>
-									<xsl:choose>
-										<xsl:when test="example">
-											<xsl:value-of select="example"/>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:if test="@example-return-var">
-												<xsl:text>var </xsl:text>
-												<xsl:value-of select="@example-return-var"/>
-												<xsl:text> = </xsl:text>
-											</xsl:if>
-											<xsl:text>$( ".selector" ).</xsl:text>
-											<xsl:value-of select="$entry-name"/>
-											<xsl:text>( "</xsl:text>
-											<xsl:value-of select="$method-name"/>
-											<xsl:text>"</xsl:text>
-											<xsl:if test="@example-params">
-												<xsl:text>, </xsl:text>
-												<xsl:value-of select="@example-params"/>
-											</xsl:if>
-											<xsl:text> );</xsl:text>
-										</xsl:otherwise>
-									</xsl:choose>
-								</code></pre>
-							</div>
-						</xsl:if>
 					</xsl:for-each>
 				</div>
 			</xsl:for-each>
