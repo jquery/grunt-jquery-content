@@ -64,7 +64,9 @@
 
 			<xsl:call-template name="entry-title"/>
 			<div class="entry-wrapper">
-				<xsl:call-template name="entry-signature"/>
+				<xsl:call-template name="entry-signature">
+					<xsl:with-param name="entry-index" select="$entry-index"/>
+				</xsl:call-template>
 
 				<xsl:if test="normalize-space(longdesc/*)">
 					<div class="longdesc">
@@ -211,6 +213,8 @@
 </xsl:template>
 
 <xsl:template name="entry-signature">
+	<xsl:param name="entry-index"/>
+
 	<p class="desc"><strong>Description: </strong> <xsl:apply-templates select="desc"/></p>
 	<xsl:choose>
 		<xsl:when test="@type='selector'">
@@ -224,6 +228,11 @@
 		</xsl:when>
 		<xsl:when test="@type='effect'">
 			<xsl:call-template name="entry-signature-effect"/>
+		</xsl:when>
+		<xsl:when test="@type='widget'">
+			<xsl:call-template name="widget-quick-nav">
+				<xsl:with-param name="entry-index" select="$entry-index"/>
+			</xsl:call-template>
 		</xsl:when>
 	</xsl:choose>
 </xsl:template>
@@ -328,10 +337,6 @@
 <xsl:template name="entry-body-widget">
 	<xsl:variable name="entry-name" select="@name"/>
 	<xsl:variable name="entry-index" select="position()"/>
-
-	<xsl:call-template name="widget-quick-nav">
-		<xsl:with-param name="entry-index" select="$entry-index"/>
-	</xsl:call-template>
 
 	<xsl:if test="options">
 		<section id="options">
