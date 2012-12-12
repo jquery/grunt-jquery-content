@@ -591,23 +591,18 @@
 </xsl:template>
 <xsl:template name="example-code"/>
 
-<!--
-	Render type(s) for an argument element.
-	Type can either be a @type attribute or one or more <type> child elements.
--->
+<!-- Render types (Number, Boolean, etc.) -->
 <xsl:template name="render-types">
 	<xsl:if test="@type and type">
 		<strong>ERROR: Use <i>either</i> @type or type elements</strong>
 	</xsl:if>
 
-	<!-- a single type -->
 	<xsl:if test="@type">
 		<xsl:call-template name="render-type">
 			<xsl:with-param name="typename" select="@type" />
 		</xsl:call-template>
 	</xsl:if>
 
-	<!-- elements. Render each type, comma seperated -->
 	<xsl:if test="type">
 		<xsl:for-each select="type">
 			<xsl:if test="position() &gt; 1">
@@ -691,13 +686,24 @@
 </xsl:template>
 
 <xsl:template name="return-value">
-	<xsl:if test="@return != ''">
-		<xsl:text> </xsl:text>
+	<xsl:if test="@return or return">
 		<span class="returns">
 			<xsl:text>Returns: </xsl:text>
-			<a class="return" href="http://api.jquery.com/Types/#{@return}">
-				<xsl:value-of select="@return"/>
-			</a>
+			<xsl:if test="@return">
+				<xsl:call-template name="render-type">
+					<xsl:with-param name="typename" select="@return"/>
+				</xsl:call-template>
+			</xsl:if>
+			<xsl:if test="return">
+				<xsl:for-each select="return">
+					<xsl:if test="position() &gt; 1">
+						<xsl:text> or </xsl:text>
+					</xsl:if>
+					<xsl:call-template name="render-type">
+						<xsl:with-param name="typename" select="@type"/>
+					</xsl:call-template>
+				</xsl:for-each>
+			</xsl:if>
 		</span>
 	</xsl:if>
 </xsl:template>
