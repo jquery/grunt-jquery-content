@@ -242,9 +242,7 @@
 		<xsl:for-each select="signature">
 			<li class="signature">
 				<h4 class="name">
-					<xsl:if test="added">
-						<xsl:call-template name="version-details" select="../signature"/>
-					</xsl:if>
+					<xsl:call-template name="version-details"/>
 					<xsl:text>jQuery( "</xsl:text><xsl:value-of select="sample|../sample"/><xsl:text>" )</xsl:text>
 				</h4>
 
@@ -261,20 +259,16 @@
 
 <xsl:template name="entry-signature-property">
 	<ul class="signatures">
-		<li class="signature">
-			<h4 class="name">
-				<xsl:if test="signature/added">
-					<xsl:call-template name="version-details" select="signature"/>
-				</xsl:if>
-				<xsl:value-of select="@name"/>
-			</h4>
-
-			<xsl:if test="properties">
-				<ul><xsl:for-each select="properties/property">
-					<xsl:apply-templates select="."/>
-				</xsl:for-each></ul>
-			</xsl:if>
-		</li>
+		<!-- A property can't have multiple signatures, but we want to change
+		context to the signature for consistency -->
+		<xsl:for-each select="signature">
+			<li class="signature">
+				<h4 class="name">
+					<xsl:call-template name="version-details"/>
+					<xsl:value-of select="../@name"/>
+				</h4>
+			</li>
+		</xsl:for-each>
 	</ul>
 </xsl:template>
 
@@ -309,11 +303,10 @@
 
 <xsl:template name="entry-signature-effect">
 	<ul class="signatures">
+		<!-- NOTE: effects don't have signatures, but they probably should -->
 		<li class="signature">
 			<h4 class="name">
-				<xsl:if test="signature/added">
-					<xsl:call-template name="version-details" select="signature"/>
-				</xsl:if>
+				<xsl:call-template name="version-details"/>
 				<xsl:value-of select="@name"/>
 			</h4>
 
