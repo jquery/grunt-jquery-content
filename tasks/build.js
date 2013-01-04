@@ -143,7 +143,8 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 	// receives the innerHTML of a <code> element and if the first character
 	// is an encoded left angle bracket, we'll assume the language is html
 	function crudeHtmlCheck ( input ) {
-		return input.trim().indexOf( "&lt;" ) === 0 ? "xml" : "";
+		var first = input.trim().charAt( 0 );
+		return ( first === "&lt;" || first === "<" ) ? "xml" : "";
 	}
 
 	// when parsing the class attribute, make sure a class matches an actually
@@ -170,13 +171,12 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 			lang = $t.attr( "data-lang" ) ||
 				getLanguageFromClass( $t.attr( "class" ) ) ||
 				crudeHtmlCheck( code ) ||
-				undefined,
+				"javascript",
 			linenumAttr = $t.attr( "data-linenum" ),
 			linenum = (linenumAttr === "true" ? 1 : linenumAttr) || 1,
 			gutter = linenumAttr === undefined ? false : true,
-			// If we've got a language, use it, otherwise let highlight.js detect
-			highlighted = lang ? hljs.highlight( lang, code ) : hljs.highlightAuto( code ),
-			fixed = hljs.fixMarkup( highlighted.value ),
+			highlighted = hljs.highlight( lang, code ),
+			fixed = hljs.fixMarkup( highlighted.value, "  " ),
 			output = grunt.helper( "add-line-numbers", fixed, linenum, gutter, highlighted.language );
 
 		$t.parent().replaceWith( output );
