@@ -1,0 +1,16 @@
+<div class="syntaxhighlighter <%= lang %> <% if (!gutter) { %>nogutter<% } %>">
+	<table>
+		<tbody>
+			<tr>
+				<td class="gutter">
+					<% _.forEach(lines, function(line, i) { %>
+						<div class="line n<%= i + startAt %>"><%= i + startAt %></div>
+					<% }); %>
+				</td>
+				<td class="code">
+					<pre><% _.forEach(lines, function(line, i) { %><div class="container"><div class="line"><code><%= line %></code></div></div><% }); %></pre>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

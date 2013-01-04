@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "grunt-wordpress": "1.0.5",
-    "node-syntaxhighlighter": "0.8.x",
+    "highlight.js": "7.3.0",
+    "ent": "0.0.5",
     "cheerio": "0.8.3",
     "rimraf": "2.0.2",
     "marked": "0.2.5",
