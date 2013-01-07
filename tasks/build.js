@@ -138,6 +138,7 @@ grunt.registerMultiTask( "build-resources", "Copy resources", function() {
 	});
 });
 
+var lineNumberTemplate = grunt.file.read( grunt.task.getFile("jquery-build/lineNumberTemplate.jst") );
 grunt.registerHelper( "syntax-highlight", function( options ) {
 
 	// receives the innerHTML of a <code> element and if the first character
@@ -162,12 +163,49 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 		return "";
 	}
 
+	function outdent( string ) {
+		var rOutdent,
+			adjustedLines = [],
+			minTabs = Infinity,
+			rLeadingTabs = /^\t+/;
+
+		string.split( "\n" ).forEach(function( line, i, arr ) {
+			// Don't include first or last line if it's nothing but whitespace
+			if ( (i === 0 || i === arr.length - 1) && !line.trim().length ) {
+				return;
+			}
+
+			// For empty lines inside the snippet, push a space so the line renders properly
+			if ( !line.trim().length ) {
+				adjustedLines.push(" ");
+				return;
+			}
+
+			// Count how many leading tabs there are and update the global minimum
+			var match = line.match( rLeadingTabs ),
+				tabs = match ? match[0].length : 0;
+			minTabs = Math.min( minTabs, tabs );
+
+			adjustedLines.push( line );
+		});
+
+		if ( minTabs !== Infinity ) {
+			// Outdent the lines as much as possible
+			rOutdent = new RegExp( "^\t{" + minTabs + "}" );
+			adjustedLines = adjustedLines.map(function( line ) {
+				return line.replace( rOutdent, "" );
+			});
+		}
+
+		return adjustedLines.join( "\n" );
+	}
+
 	var html = options.file ? grunt.file.read( options.file ) : options.content,
 		$ = cheerio.load( html );
 
 	$( "pre > code" ).each( function( index, el ) {
 		var $t = $( this ),
-			code = ent.decode( $t.html() ),
+			code = ent.decode( outdent( $t.html() ) ),
 			lang = $t.attr( "data-lang" ) ||
 				getLanguageFromClass( $t.attr( "class" ) ) ||
 				crudeHtmlCheck( code ) ||
@@ -176,78 +214,17 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 			linenum = (linenumAttr === "true" ? 1 : linenumAttr) || 1,
 			gutter = linenumAttr === undefined ? false : true,
 			highlighted = hljs.highlight( lang, code ),
-			fixed = hljs.fixMarkup( highlighted.value, "  " ),
-			output = grunt.helper( "add-line-numbers", fixed, linenum, gutter, highlighted.language );
+			fixed = hljs.fixMarkup( highlighted.value, "  " );
 
-		$t.parent().replaceWith( output );
+		$t.parent().replaceWith( grunt.template.process( lineNumberTemplate, {
+			lines: fixed.split("\n"),
+			startAt: linenum,
+			gutter: gutter,
+			lang: lang
+		}));
 	});
 
 	return $.html();
-});
-
-var lineNumberTemplate = grunt.file.read( grunt.task.getFile("jquery-build/lineNumberTemplate.jst") );
-
-grunt.registerHelper("add-line-numbers", function( block, startAt, gutter, lang ) {
-
-	var lines = (function cleanLines() {
-		var allLines = block.split("\n"),
-		r = [],
-		rLeadingTabs = /^\t+/g,
-		minTabs = 0,
-		indents = [],
-		outdent;
-
-		grunt.utils._.each( allLines, function(s,i) {
-			// Don't include first or last line if it's nothing but whitespace/tabs
-			if ( (i === 0 || i === allLines.length - 1) && !s.replace(/^\s+/,"").length ) {
-				return;
-			}
-
-			// Find the difference in line length once leading tabs are stripped
-			// and store the indent level in the indents collection for this code block
-			var match = s.match( rLeadingTabs );
-			if ( match ) {
-				indents.push( -(match[0].replace( rLeadingTabs, "" ).length - match[0].length) );
-			}
-
-			// For empty lines inside the snippet, push in a <br> so the line renders properly
-			if ( !s.trim().length ) {
-				r.push("<br>");
-				return;
-			}
-
-			// Otherwise, just push the line in as-is
-			r.push(s)
-
-		});
-
-
-		// Find the lowest shared indent level across all lines
-		// If it's greater than 0, we have to outdent the entire codeblock
-		minTabs = indents.length ? grunt.utils._.min( indents ) : 0;
-
-		if ( !minTabs ) {
-			return r;
-		}
-
-		// Outdent the lines so indentation is only within the block, using the lowest shared indent level
-		outdent = new RegExp("^"+ new Array(minTabs).join("\t"), "g" );
-		return r.map(function(s) {
-			return s.replace(outdent, "");
-		});
-	})(),
-	
-	data = {
-		startAt: startAt,
-                lines: lines,
-		gutter: gutter,
-		lang: lang
-	},
-
-	lined = grunt.template.process( lineNumberTemplate, data );
-
-	return lined;
-
 });
 
 grunt.registerHelper( "parse-markdown", function( src, generateToc ) {

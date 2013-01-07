@@ -382,16 +382,16 @@
 
 						<p>Initialize the <xsl:value-of select="$entry-name"/> with the <xsl:value-of select="@name"/> option specified:</p>
 						<pre><code data-lang="javascript">
-						$( ".selector" ).<xsl:value-of select="$entry-name"/>({ <xsl:value-of select="@name"/>: <xsl:value-of select="@example-value"/> });
+							$( ".selector" ).<xsl:value-of select="$entry-name"/>({ <xsl:value-of select="@name"/>: <xsl:value-of select="@example-value"/> });
 						</code></pre>
 
 						<p>Get or set the <xsl:value-of select="@name"/> option, after initialization:</p>
 						<pre><code data-lang="javascript">
-// getter
-var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$entry-name"/>( "option", "<xsl:value-of select="@name"/>" );
+							// getter
+							var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$entry-name"/>( "option", "<xsl:value-of select="@name"/>" );
 
-// setter
-$( ".selector" ).<xsl:value-of select="$entry-name"/>( "option", "<xsl:value-of select="@name"/>", <xsl:value-of select="@example-value"/> );
+							// setter
+							$( ".selector" ).<xsl:value-of select="$entry-name"/>( "option", "<xsl:value-of select="@name"/>", <xsl:value-of select="@example-value"/> );
 						</code></pre>
 					</xsl:if>
 					<xsl:apply-templates select="example">
@@ -886,16 +886,16 @@ $( ".selector" ).<xsl:value-of select="$entry-name"/>( "option", "<xsl:value-of 
 
 		<p>Initialize the <xsl:value-of select="$entry-name"/> with the <xsl:value-of select="@name"/> callback specified:</p>
 		<pre><code data-lang="javascript">
-<xsl:text>$( ".selector" ).</xsl:text>
-<xsl:value-of select="$entry-name"/>
-<xsl:text>({&#xA;&#x9;</xsl:text>
-<xsl:value-of select="@name"/>
-<xsl:text>: function( event, ui ) {}&#xA;});</xsl:text>
+			<xsl:text>$( ".selector" ).</xsl:text>
+			<xsl:value-of select="$entry-name"/>
+			<xsl:text>({&#xA;&#x9;</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>: function( event, ui ) {}&#xA;});</xsl:text>
 		</code></pre>
 
 		<p>Bind an event listener to the <xsl:value-of select="$event-type"/> event:</p>
 		<pre><code data-lang="javascript">
-$( ".selector" ).on( "<xsl:value-of select="$event-type"/>", function( event, ui ) {} );
+			$( ".selector" ).on( "<xsl:value-of select="$event-type"/>", function( event, ui ) {} );
 		</code></pre>
 	</div>
 </xsl:template>
