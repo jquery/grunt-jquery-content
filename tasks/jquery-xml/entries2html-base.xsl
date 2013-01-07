@@ -611,15 +611,18 @@
 <!-- Render a single type -->
 <xsl:template name="render-type">
 	<xsl:param name="typename"/>
-	<xsl:choose>
+
+	<xsl:call-template name="render-type-simple">
+		<xsl:with-param name="typename" select="$typename"/>
+	</xsl:call-template>
+
 	<!--
 		If the type is "Function" we special case and write the function signature,
 		e.g. function(String)=>String
 		- formal arguments are child elements to the current element
 		- the return element is optional
 	-->
-	<xsl:when test="$typename = 'Function'">
-		<a href="http://api.jquery.com/Types/#Function">Function</a>
+	<xsl:if test="$typename = 'Function'">
 		<xsl:call-template name="render-type-function"/>
 
 		<!-- display return type if present -->
@@ -627,12 +630,12 @@
 			=>
 			<xsl:call-template name="render-return-types" />
 		</xsl:if>
-	</xsl:when>
-	<xsl:otherwise>
-		<!-- not function - just display typename -->
-		<a href="http://api.jquery.com/Types#{$typename}"><xsl:value-of select="$typename" /></a>
-	</xsl:otherwise>
-	</xsl:choose>
+	</xsl:if>
+</xsl:template>
+
+<xsl:template name="render-type-simple">
+	<xsl:param name="typename"/>
+	<a href="http://api.jquery.com/Types#{$typename}"><xsl:value-of select="$typename" /></a>
 </xsl:template>
 
 <xsl:template name="render-type-function">
@@ -683,7 +686,7 @@
 		<span class="returns">
 			<xsl:text>Returns: </xsl:text>
 			<xsl:if test="@return">
-				<xsl:call-template name="render-type">
+				<xsl:call-template name="render-type-simple">
 					<xsl:with-param name="typename" select="@return"/>
 				</xsl:call-template>
 			</xsl:if>
