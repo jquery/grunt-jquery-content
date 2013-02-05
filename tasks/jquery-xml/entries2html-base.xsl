@@ -330,6 +330,16 @@
 <xsl:template name="entry-body-widget">
 	<xsl:variable name="entry-name" select="@name"/>
 	<xsl:variable name="entry-index" select="position()"/>
+	<xsl:variable name="widget-name">
+		<xsl:choose>
+			<xsl:when test="@widget-name">
+				<xsl:value-of select="@widget-name"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="@name"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
 
 	<xsl:if test="options">
 		<section id="options">
@@ -380,18 +390,18 @@
 					<xsl:if test="@example-value">
 						<strong>Code examples:</strong>
 
-						<p>Initialize the <xsl:value-of select="$entry-name"/> with the <xsl:value-of select="@name"/> option specified:</p>
+						<p>Initialize the <xsl:value-of select="$widget-name"/> with the <xsl:value-of select="@name"/> option specified:</p>
 						<pre><code data-lang="javascript">
-							$( ".selector" ).<xsl:value-of select="$entry-name"/>({ <xsl:value-of select="@name"/>: <xsl:value-of select="@example-value"/> });
+							$( ".selector" ).<xsl:value-of select="$widget-name"/>({ <xsl:value-of select="@name"/>: <xsl:value-of select="@example-value"/> });
 						</code></pre>
 
 						<p>Get or set the <xsl:value-of select="@name"/> option, after initialization:</p>
 						<pre><code data-lang="javascript">
 							// getter
-							var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$entry-name"/>( "option", "<xsl:value-of select="@name"/>" );
+							var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>" );
 
 							// setter
-							$( ".selector" ).<xsl:value-of select="$entry-name"/>( "option", "<xsl:value-of select="@name"/>", <xsl:value-of select="@example-value"/> );
+							$( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>", <xsl:value-of select="@example-value"/> );
 						</code></pre>
 					</xsl:if>
 					<xsl:apply-templates select="example">
@@ -442,7 +452,7 @@
 													<xsl:text> = </xsl:text>
 												</xsl:if>
 												<xsl:text>$( ".selector" ).</xsl:text>
-												<xsl:value-of select="$entry-name"/>
+												<xsl:value-of select="$widget-name"/>
 												<xsl:text>( "</xsl:text>
 												<xsl:value-of select="$method-name"/>
 												<xsl:text>"</xsl:text>
@@ -480,6 +490,7 @@
 					<xsl:call-template name="widget-event">
 						<xsl:with-param name="entry-name" select="$entry-name"/>
 						<xsl:with-param name="event-name" select="@name"/>
+						<xsl:with-param name="widget-name" select="$widget-name"/>
 					</xsl:call-template>
 				</div>
 			</xsl:for-each>
@@ -846,13 +857,14 @@
 <xsl:template name="widget-event">
 	<xsl:param name="entry-name"/>
 	<xsl:param name="event-name"/>
+	<xsl:param name="widget-name"/>
 	<xsl:variable name="event-prefix">
 		<xsl:choose>
 			<xsl:when test="//entry/@event-prefix">
 				<xsl:value-of select="//entry/@event-prefix"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="$entry-name"/>
+				<xsl:value-of select="$widget-name"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
@@ -887,10 +899,10 @@
 	<div>
 		<strong>Code examples:</strong>
 
-		<p>Initialize the <xsl:value-of select="$entry-name"/> with the <xsl:value-of select="@name"/> callback specified:</p>
+		<p>Initialize the <xsl:value-of select="$widget-name"/> with the <xsl:value-of select="@name"/> callback specified:</p>
 		<pre><code data-lang="javascript">
 			<xsl:text>$( ".selector" ).</xsl:text>
-			<xsl:value-of select="$entry-name"/>
+			<xsl:value-of select="$widget-name"/>
 			<xsl:text>({&#xA;&#x9;</xsl:text>
 			<xsl:value-of select="@name"/>
 			<xsl:text>: function( event, ui ) {}&#xA;});</xsl:text>
@@ -922,7 +934,21 @@ placeholder with @foo from the <entry> -->
 <!-- replace the <placeholder> with the associated attribute from the entry -->
 <xsl:template match="//placeholder">
 	<xsl:variable name="name" select="@name"/>
-	<xsl:value-of select="ancestor::entry/@*[name()=$name]"/>
+	<xsl:choose>
+		<xsl:when test="$name = 'name'">
+			<xsl:choose>
+				<xsl:when test="ancestor::entry/@widget-name">
+					<xsl:value-of select="ancestor::entry/@widget-name"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="ancestor::entry/@name"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:value-of select="ancestor::entry/@*[name()=$name]"/>
+		</xsl:otherwise>
+	</xsl:choose>
 </xsl:template>
 
 <!-- escape-string, from xml2json.xsl -->
