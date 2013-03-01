@@ -521,6 +521,7 @@
 		<div class="quick-nav-section">
 			<h3>Options</h3>
 			<xsl:for-each select="options/option">
+				<xsl:sort select="@name"/>
 				<xsl:variable name="name" select="@name"/>
 				<div><a href="#option-{$name}"><xsl:value-of select="$name"/></a></div>
 			</xsl:for-each>
@@ -529,6 +530,7 @@
 		<div class="quick-nav-section">
 			<h3>Methods</h3>
 			<xsl:for-each select="methods/method">
+				<xsl:sort select="@name"/>
 				<xsl:variable name="name" select="@name"/>
 				<div><a href="#method-{$name}"><xsl:value-of select="$name"/></a></div>
 			</xsl:for-each>
@@ -537,6 +539,7 @@
 		<div class="quick-nav-section">
 			<h3>Events</h3>
 			<xsl:for-each select="events/event">
+				<xsl:sort select="@name"/>
 				<xsl:variable name="name" select="@name"/>
 				<div><a href="#event-{$name}"><xsl:value-of select="$name"/></a></div>
 			</xsl:for-each>
