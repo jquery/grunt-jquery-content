@@ -216,6 +216,12 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 			highlighted = hljs.highlight( lang, code ),
 			fixed = hljs.fixMarkup( highlighted.value, "  " );
 
+		// Handle multi-line comments (#32)
+		fixed = fixed.replace( /<span class="comment">\/\*([^<]+)\*\/<\/span>/g, function( full, comment ) {
+			return "<span class=\"comment\">/*" +
+				comment.split( "\n" ).join( "</span>\n<span class=\"comment\">" ) +
+				"*/</span>";
+		});
 		$t.parent().replaceWith( grunt.template.process( lineNumberTemplate, {
 			lines: fixed.split("\n"),
 			startAt: linenum,
