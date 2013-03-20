@@ -211,7 +211,7 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 				crudeHtmlCheck( code ) ||
 				"javascript",
 			linenumAttr = $t.attr( "data-linenum" ),
-			linenum = (linenumAttr === "true" ? 1 : linenumAttr) || 1,
+			linenum = (linenumAttr === "true" ? 1 : parseInt( linenumAttr, 10 ) ) || 1,
 			gutter = linenumAttr === undefined ? false : true,
 			highlighted = hljs.highlight( lang, code ),
 			fixed = hljs.fixMarkup( highlighted.value, "  " );
