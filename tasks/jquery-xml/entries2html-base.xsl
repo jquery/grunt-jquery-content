@@ -281,20 +281,24 @@
 	<ul class="signatures">
 		<xsl:for-each select="signature">
 			<li class="signature">
-				<xsl:attribute name="id">
+				<xsl:variable name="id">
 					<xsl:value-of select="$entry-name-trans"/>
 					<xsl:for-each select="argument">
 						<xsl:variable name="arg-name" select="translate(@name, ' ,.)(', '--')"/>
 						<xsl:text>-</xsl:text><xsl:value-of select="$arg-name"/>
 					</xsl:for-each>
-				</xsl:attribute>
+				</xsl:variable>
 
 				<h4 class="name">
 					<xsl:call-template name="version-details"/>
-					<xsl:call-template name="method-signature">
-						<xsl:with-param name="method-name" select="$entry-name"/>
-						<xsl:with-param name="dot" select="$method-prefix-dot"/>
-					</xsl:call-template>
+					<a id="{$id}" href="#{$id}">
+						<span class="icon-link"></span>
+
+						<xsl:call-template name="method-signature">
+							<xsl:with-param name="method-name" select="$entry-name"/>
+							<xsl:with-param name="dot" select="$method-prefix-dot"/>
+						</xsl:call-template>
+					</a>
 				</h4>
 
 				<xsl:call-template name="arguments"/>
