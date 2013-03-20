@@ -267,6 +267,8 @@
 					<xsl:call-template name="version-details"/>
 					<xsl:value-of select="../@name"/>
 				</h4>
+
+				<xsl:call-template name="properties"/>
 			</li>
 		</xsl:for-each>
 	</ul>
@@ -750,6 +752,15 @@
 		</ul>
 	</xsl:if>
 </xsl:template>
+
+<xsl:template name="properties">
+	<xsl:if test="property">
+		<ul>
+			<xsl:apply-templates select="property"/>
+		</ul>
+	</xsl:if>
+</xsl:template>
+
 <!-- arguments and properties are rendered the same way and nest -->
 <xsl:template match="argument|property">
 	<li>
