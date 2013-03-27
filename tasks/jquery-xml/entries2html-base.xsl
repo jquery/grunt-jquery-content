@@ -310,8 +310,10 @@
 					<xsl:text>", function( event ) { ... } )</xsl:text>
 				</h4>
 
-				<p class="event-properties">Additional properties on the <a href="http://api.jquery.com/category/events/event-object/">event object</a>:</p>
-				<xsl:call-template name="properties"/>
+				<xsl:if test="property">
+					<p class="event-properties">Additional properties on the <a href="http://api.jquery.com/category/events/event-object/">event object</a>:</p>
+					<xsl:call-template name="properties"/>
+				</xsl:if>
 			</li>
 		</xsl:for-each>
 	</ul>
