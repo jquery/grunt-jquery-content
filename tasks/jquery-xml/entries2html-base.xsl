@@ -124,18 +124,12 @@
 		<h4><span>Contents:</span></h4>
 		<ul class="toc-list">
 			<xsl:for-each select="//entry">
-				<xsl:variable name="entry-name-trans" select="translate(@name,'$., ()/{}','s---')" />
-				<xsl:variable name="entry-url" select="concat('#',$entry-name-trans,position())"/>
 				<xsl:choose>
 					<xsl:when test="@type='method'">
-						<xsl:call-template name="toc-method">
-							<xsl:with-param name="entry-url" select="$entry-url"/>
-						</xsl:call-template>
+						<xsl:call-template name="toc-method"/>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:call-template name="toc-basic">
-							<xsl:with-param name="entry-url" select="$entry-url"/>
-						</xsl:call-template>
+						<xsl:call-template name="toc-basic"/>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:for-each>
@@ -144,13 +138,15 @@
 </xsl:template>
 
 <xsl:template name="toc-basic">
-	<xsl:param name="entry-url"/>
+	<xsl:variable name="entry-name-trans" select="translate(@name,'$., ()/{}','s---')"/>
+	<xsl:variable name="entry-url" select="concat('#',$entry-name-trans,position())"/>
 	<li><a href="{$entry-url}"><xsl:value-of select="@name"/></a></li>
 </xsl:template>
 
 <xsl:template name="toc-method">
-	<xsl:param name="entry-url"/>
 	<xsl:variable name="entry-name" select="@name"/>
+	<xsl:variable name="entry-name-trans" select="translate(@name,'$., ()/{}','s---')"/>
+	<xsl:variable name="entry-url" select="concat('#',$entry-name-trans,position())"/>
 
 	<li>
 		<a href="{$entry-url}">
@@ -164,11 +160,20 @@
 
 		<ul>
 			<xsl:for-each select="signature">
+				<xsl:variable name="id">
+					<xsl:value-of select="$entry-name-trans"/>
+					<xsl:for-each select="argument">
+						<xsl:text>-</xsl:text><xsl:value-of select="translate(@name, ' ,.)(', '--')"/>
+					</xsl:for-each>
+				</xsl:variable>
+
 				<li>
-					<xsl:call-template name="method-signature">
-						<xsl:with-param name="method-name" select="$entry-name"/>
-						<xsl:with-param name="dot" select="$method-prefix-dot"/>
-					</xsl:call-template>
+					<a href="#{$id}">
+						<xsl:call-template name="method-signature">
+							<xsl:with-param name="method-name" select="$entry-name"/>
+							<xsl:with-param name="dot" select="$method-prefix-dot"/>
+						</xsl:call-template>
+					</a>
 				</li>
 			</xsl:for-each>
 		</ul>
@@ -284,8 +289,7 @@
 				<xsl:variable name="id">
 					<xsl:value-of select="$entry-name-trans"/>
 					<xsl:for-each select="argument">
-						<xsl:variable name="arg-name" select="translate(@name, ' ,.)(', '--')"/>
-						<xsl:text>-</xsl:text><xsl:value-of select="$arg-name"/>
+						<xsl:text>-</xsl:text><xsl:value-of select="translate(@name, ' ,.)(', '--')"/>
 					</xsl:for-each>
 				</xsl:variable>
 
