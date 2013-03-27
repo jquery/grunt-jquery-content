@@ -209,6 +209,12 @@
 				</span>
 				<xsl:call-template name="return-value"/>
 			</xsl:when>
+			<xsl:when test="$entry-type='event'">
+				<span>
+					<xsl:value-of select="@name"/>
+					<xsl:text> event</xsl:text>
+				</span>
+			</xsl:when>
 			<xsl:otherwise>
 				<span><xsl:value-of select="title"/></span>
 			</xsl:otherwise>
@@ -227,6 +233,9 @@
 		</xsl:when>
 		<xsl:when test="@type='property'">
 			<xsl:call-template name="entry-signature-property"/>
+		</xsl:when>
+		<xsl:when test="@type='event'">
+			<xsl:call-template name="entry-signature-event"/>
 		</xsl:when>
 		<xsl:when test="@type='method'">
 			<xsl:call-template name="entry-signature-method"/>
@@ -273,6 +282,35 @@
 					<xsl:value-of select="../@name"/>
 				</h4>
 
+				<xsl:call-template name="properties"/>
+			</li>
+		</xsl:for-each>
+	</ul>
+</xsl:template>
+
+<xsl:template name="entry-signature-event">
+	<ul class="signatures">
+		<!-- An event can't have multiple signatures, but we want to change
+		context to the signature for consistency -->
+		<xsl:for-each select="signature">
+			<li class="signature">
+				<h4 class="name">
+					<xsl:call-template name="version-details"/>
+					<xsl:text>jQuery( </xsl:text>
+					<xsl:choose>
+						<xsl:when test="../@example-selector">
+							<xsl:value-of select="../@example-selector"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>".selector"</xsl:text>
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:text> ).on( "</xsl:text>
+					<xsl:value-of select="../@name"/>
+					<xsl:text>", function( event ) { ... } )</xsl:text>
+				</h4>
+
+				<p class="event-properties">Additional properties on the <a href="http://api.jquery.com/category/events/event-object/">event object</a>:</p>
 				<xsl:call-template name="properties"/>
 			</li>
 		</xsl:for-each>
