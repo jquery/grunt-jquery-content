@@ -24,7 +24,7 @@
     "node": "*"
   },
   "dependencies": {
-    "grunt-wordpress": "1.0.5",
+    "grunt-wordpress": "1.0.7",
     "highlight.js": "7.3.0",
     "ent": "0.0.5",
     "cheerio": "0.8.3",
