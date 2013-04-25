@@ -989,7 +989,7 @@ placeholder with @foo from the <entry> -->
 	</xsl:apply-templates>
 </xsl:template>
 <!-- This makes elements and attributes get copied over properly -->
-<xsl:template match="desc//*|desc//@*|longdesc//*|longdesc//@*">
+<xsl:template match="desc//*|desc//@*|longdesc//*|longdesc//@*|note//*|note//@*">
 	<xsl:copy>
 		<xsl:apply-templates select="@* | node()"/>
 	</xsl:copy>
