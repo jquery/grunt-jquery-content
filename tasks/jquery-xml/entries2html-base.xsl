@@ -438,21 +438,9 @@
 						</ul>
 					</xsl:if>
 					<xsl:if test="@example-value">
-						<strong>Code examples:</strong>
-
-						<p>Initialize the <xsl:value-of select="$widget-name"/> with the <xsl:value-of select="@name"/> option specified:</p>
-						<pre><code data-lang="javascript">
-							$( ".selector" ).<xsl:value-of select="$widget-name"/>({ <xsl:value-of select="@name"/>: <xsl:value-of select="@example-value"/> });
-						</code></pre>
-
-						<p>Get or set the <xsl:value-of select="@name"/> option, after initialization:</p>
-						<pre><code data-lang="javascript">
-							// getter
-							var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>" );
-
-							// setter
-							$( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>", <xsl:value-of select="@example-value"/> );
-						</code></pre>
+						<xsl:call-template name="widget-option-examples">
+							<xsl:with-param name="widget-name" select="$widget-name"/>
+						</xsl:call-template>
 					</xsl:if>
 					<xsl:apply-templates select="example">
 						<xsl:with-param name="number-examples" select="count(example)"/>
@@ -595,6 +583,40 @@
 			</xsl:for-each>
 		</div>
 	</section>
+</xsl:template>
+
+<xsl:template name="widget-option-examples">
+	<xsl:param name="widget-name"/>
+
+	<strong>Code examples:</strong>
+
+	<p>Initialize the <xsl:value-of select="$widget-name"/> with the <code><xsl:value-of select="@name"/></code> option specified:</p>
+	<pre><code data-lang="javascript">
+		$( ".selector" ).<xsl:value-of select="$widget-name"/>({ <xsl:value-of select="@name"/>: <xsl:value-of select="@example-value"/> });
+	</code></pre>
+
+	<p>
+		<xsl:choose>
+			<xsl:when test="@init-only">
+				<xsl:text>Get</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>Get or set</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text> the </xsl:text>
+		<code><xsl:value-of select="@name"/></code>
+		<xsl:text> option, after initialization:</xsl:text>
+	</p>
+	<pre><code data-lang="javascript">
+		// getter
+		var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>" );
+		<xsl:if test="not(@init-only)">
+
+		// setter
+		$( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>", <xsl:value-of select="@example-value"/> );
+		</xsl:if>
+	</code></pre>
 </xsl:template>
 
 <!-- examples -->
