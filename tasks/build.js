@@ -236,7 +236,8 @@ grunt.registerHelper( "syntax-highlight", function( options ) {
 grunt.registerHelper( "parse-markdown", function( src, generateToc ) {
 	var toc = "",
 		marked = require( "marked" ),
-		tokens = marked.lexer( src );
+		tokens = marked.lexer( src ),
+		links = tokens.links;
 
 	if ( generateToc ) {
 		tokens.filter(function( item ) {
@@ -268,6 +269,9 @@ grunt.registerHelper( "parse-markdown", function( src, generateToc ) {
 		});
 
 		tokens = marked.lexer( toc ).concat( tokens );
+		// The TOC never generates links, so we can just copy the links directly
+		// from the original tokens.
+		tokens.links = links;
 	}
 
 	// Override the default encoding of code blocks so that syntax highlighting
