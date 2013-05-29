@@ -116,7 +116,8 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 });
 
 grunt.registerTask( "build-xml-categories", function() {
-	var taskDone = this.async();
+	var taskDone = this.async(),
+		targetPath = grunt.config( "wordpress.dir" ) + "/taxonomies.json";
 
 	grunt.utils.spawn({
 		cmd: "xsltproc",
@@ -132,14 +133,39 @@ grunt.registerTask( "build-xml-categories", function() {
 
 		grunt.utils.spawn({
 			cmd: "xsltproc",
-			args: [ "--output", grunt.config( "wordpress.dir" ) + "/taxonomies.json",
+			args: [ "--output", targetPath,
 				grunt.task.getFile( "jquery-xml/xml2json.xsl" ), "taxonomies.xml" ]
 		}, function( err, result ) {
+			var taxonomies;
+
 			if ( err ) {
 				grunt.verbose.error();
 				grunt.log.error( err );
 				taskDone();
 				return;
+			}
+
+			// Syntax highlight code blocks
+			function highlightDescription( category ) {
+				if ( category.description ) {
+					category.description = grunt.helper( "syntax-highlight",
+						{ content: category.description } );
+				}
+			}
+
+			function highlightCategories( categories ) {
+				categories.forEach(function( category ) {
+					highlightDescription( category );
+					if ( category.children ) {
+						highlightCategories( category.children );
+					}
+				});
+			}
+
+			if ( !grunt.option( "nohighlight" ) ) {
+				taxonomies = grunt.file.readJSON( targetPath );
+				highlightCategories( taxonomies.category );
+				grunt.file.write( targetPath, JSON.stringify( taxonomies ) );
 			}
 
 			fs.unlinkSync( "taxonomies.xml" );
