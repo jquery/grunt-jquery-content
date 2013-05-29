@@ -274,17 +274,6 @@ grunt.registerHelper( "parse-markdown", function( src, generateToc ) {
 		tokens.links = links;
 	}
 
-	// Override the default encoding of code blocks so that syntax highlighting
-	// works properly.
-	tokens.forEach(function( token ) {
-		if ( token.type === "code" ) {
-			token.escaped = true;
-			token.text = token.text
-				.replace( /</g, "&lt;" )
-				.replace( />/g, "&gt;" );
-		}
-	});
-
 	return marked.parser( tokens );
 });
 
