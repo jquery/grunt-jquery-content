@@ -721,7 +721,7 @@
 
 <xsl:template name="render-type-simple">
 	<xsl:param name="typename"/>
-	<a href="http://api.jquery.com/Types#{$typename}"><xsl:value-of select="$typename" /></a>
+	<a href="http://api.jquery.com/Types/#{$typename}"><xsl:value-of select="$typename" /></a>
 </xsl:template>
 
 <xsl:template name="render-type-function">
@@ -730,7 +730,7 @@
 		<xsl:text> </xsl:text>
 		<xsl:for-each select="argument">
 			<xsl:if test="position() &gt; 1">, </xsl:if>
-			<a href="http://api.jquery.com/Types#{@type}">
+			<a href="http://api.jquery.com/Types/#{@type}">
 				<xsl:value-of select="@type"/>
 			</a>
 			<xsl:text> </xsl:text>
