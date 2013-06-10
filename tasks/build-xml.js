@@ -13,10 +13,10 @@ grunt.registerMultiTask( "xmllint", "Lint xml files", function() {
 		grunt.utils.spawn({
 			cmd: "xmllint",
 			args: [ "--noout", fileName ]
-		}, function( err, result ) {
-			if ( err ) {
+		}, function( error ) {
+			if ( error ) {
 				grunt.verbose.error();
-				grunt.log.error( err );
+				grunt.log.error( error );
 				fileDone();
 				return;
 			}
@@ -123,10 +123,10 @@ grunt.registerTask( "build-xml-categories", function() {
 		cmd: "xsltproc",
 		args: [ "--output", "taxonomies.xml",
 			grunt.task.getFile( "jquery-xml/cat2tax.xsl" ), "categories.xml" ]
-	}, function( err, result ) {
-		if ( err ) {
+	}, function( error ) {
+		if ( error ) {
 			grunt.verbose.error();
-			grunt.log.error( err );
+			grunt.log.error( error );
 			taskDone();
 			return;
 		}
@@ -135,12 +135,12 @@ grunt.registerTask( "build-xml-categories", function() {
 			cmd: "xsltproc",
 			args: [ "--output", targetPath,
 				grunt.task.getFile( "jquery-xml/xml2json.xsl" ), "taxonomies.xml" ]
-		}, function( err, result ) {
+		}, function( error ) {
 			var taxonomies;
 
-			if ( err ) {
+			if ( error ) {
 				grunt.verbose.error();
-				grunt.log.error( err );
+				grunt.log.error( error );
 				taskDone();
 				return;
 			}

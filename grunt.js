@@ -1,38 +1,36 @@
-module.exports = function(grunt) {
+module.exports = function( grunt ) {
 "use strict";
 
-  // Project configuration.
-  grunt.initConfig({
-    lint: {
-      files: ['grunt.js', 'tasks/**/*.js' ]
-    },
-    watch: {
-      files: '<config:lint.files>',
-      tasks: 'default'
-    },
-    jshint: {
-      options: {
-        curly: true,
-        eqeqeq: true,
-        immed: true,
-        latedef: true,
-        newcap: true,
-        noarg: true,
-        sub: true,
-        undef: true,
-        boss: true,
-        eqnull: true,
-        node: true,
-        es5: true
-      },
-      globals: {}
-    }
-  });
+grunt.initConfig({
+	lint: {
+		files: [ "grunt.js", "tasks/**/*.js" ]
+	},
+	watch: {
+		files: "<config:lint.files>",
+		tasks: "default"
+	},
+	jshint: {
+		options: {
+			boss: true,
+			curly: true,
+			eqeqeq: true,
+			eqnull: true,
+			expr: true,
+			immed: true,
+			noarg: true,
+			onevar: true,
+			quotmark: "double",
+			smarttabs: true,
+			trailing: true,
+			undef: true,
+			unused: true,
 
-  // Load local tasks.
-  grunt.loadTasks('tasks');
+			node: true
+		}
+	}
+});
 
-  // Default task.
-  grunt.registerTask('default', 'lint');
+grunt.loadTasks( "tasks" );
+grunt.registerTask( "default", "lint" );
 
 };
