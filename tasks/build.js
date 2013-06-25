@@ -16,7 +16,7 @@ function htmlEscape( text ) {
 
 var cheerio = require( "cheerio" ),
 	hljs = require( "highlight.js" ),
-	ent = require( "ent" ),
+	he = require( "he" ),
 	yaml = require( "js-yaml" );
 
 // Add a wrapper around wordpress-parse-post that supports YAML
@@ -204,7 +204,7 @@ grunt.registerHelper( "syntax-highlight", (function() {
 
 		$( "pre > code" ).each(function() {
 			var $t = $( this ),
-				code = ent.decode( outdent( $t.html() ) ),
+				code = he.decode( outdent( $t.html() ) ),
 				lang = $t.attr( "data-lang" ) ||
 					getLanguageFromClass( $t.attr( "class" ) ) ||
 					crudeHtmlCheck( code ) ||

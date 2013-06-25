@@ -24,13 +24,13 @@
     "node": "*"
   },
   "dependencies": {
-    "grunt-wordpress": "1.0.7",
-    "highlight.js": "7.3.0",
-    "ent": "0.0.5",
     "cheerio": "0.8.3",
-    "rimraf": "2.0.2",
+    "grunt-wordpress": "1.0.7",
+    "he": "0.1.2",
+    "highlight.js": "7.3.0",
+    "js-yaml": "2.0.1",
     "marked": "0.2.9",
-    "js-yaml": "2.0.1"
+    "rimraf": "2.0.2"
   },
   "devDependencies": {
     "grunt": "0.3.17"
