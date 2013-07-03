@@ -32,7 +32,7 @@
 			</xsl:call-template>,
 		"termSlugs": {
 			"category": [
-				<xsl:for-each select="//entry/category">
+				<xsl:for-each select="//entry[1]/category">
 					<xsl:if test="position() &gt; 1"><xsl:text>,</xsl:text></xsl:if>
 					<xsl:text>"</xsl:text>
 					<xsl:value-of select="@slug"/>
