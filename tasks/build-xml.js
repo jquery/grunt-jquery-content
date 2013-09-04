@@ -2,12 +2,39 @@ module.exports = function( grunt ) {
 "use strict";
 
 var fs = require( "fs" ),
-	path = require( "path" );
+	path = require( "path" ),
+	which = require( "which" );
+
+function checkLibxml2( executable ) {
+	try {
+		which.sync( executable );
+	} catch( error ) {
+		grunt.log.error( "Missing executable: " + executable + "." );
+		grunt.log.error( "You must install libxml2." );
+		grunt.log.error( "Downloads are available from http://www.xmlsoft.org/downloads.html" );
+		return false;
+	}
+
+	return true;
+}
+
+function checkXmllint() {
+	return checkLibxml2( "xmllint" );
+}
+
+function checkXsltproc() {
+	return checkLibxml2( "xsltproc" );
+}
 
 grunt.registerMultiTask( "xmllint", "Lint xml files", function() {
 	var task = this,
 		taskDone = task.async(),
 		files = this.data;
+
+	if ( !checkXmllint() ) {
+		taskDone( false );
+	}
+
 	grunt.utils.async.forEachSeries( this.data, function( fileName, fileDone ) {
 		grunt.verbose.write( "Linting " + fileName + "..." );
 		grunt.utils.spawn({
@@ -41,6 +68,10 @@ grunt.registerMultiTask( "xmltidy", "Tidy xml files - changes source files!", fu
 
 	// Only tidy files that are lint free
 	task.requires( "xmllint" );
+
+	if ( !checkXmllint() ) {
+		taskDone( false );
+	}
 
 	grunt.utils.async.forEachSeries( files, function( fileName, fileDone )  {
 		grunt.verbose.write( "Tidying " + fileName + "..." );
@@ -76,6 +107,10 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 		taskDone = task.async(),
 		files = this.data,
 		targetDir = grunt.config( "wordpress.dir" ) + "/posts/post/";
+
+	if ( !checkXsltproc() ) {
+		taskDone( false );
+	}
 
 	grunt.file.mkdir( targetDir );
 
@@ -118,6 +153,10 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 grunt.registerTask( "build-xml-categories", function() {
 	var taskDone = this.async(),
 		targetPath = grunt.config( "wordpress.dir" ) + "/taxonomies.json";
+
+	if ( !checkXsltproc() ) {
+		taskDone( false );
+	}
 
 	grunt.utils.spawn({
 		cmd: "xsltproc",
@@ -177,6 +216,10 @@ grunt.registerTask( "build-xml-categories", function() {
 
 grunt.registerTask( "build-xml-full", function() {
 	var taskDone = this.async();
+
+	if ( !checkXsltproc() ) {
+		taskDone( false );
+	}
 
 	grunt.file.copy( grunt.task.getFile( "jquery-xml/all-entries.xml" ), "all-entries.xml", {
 		process: function( content ) {

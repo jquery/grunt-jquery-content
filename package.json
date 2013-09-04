@@ -30,7 +30,8 @@
     "highlight.js": "7.3.0",
     "js-yaml": "2.0.1",
     "marked": "0.2.9",
-    "rimraf": "2.0.2"
+    "rimraf": "2.0.2",
+    "which": "1.0.5"
   },
   "devDependencies": {
     "grunt": "0.3.17"
