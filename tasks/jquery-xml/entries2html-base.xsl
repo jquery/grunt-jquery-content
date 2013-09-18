@@ -104,7 +104,7 @@
 						</xsl:attribute>
 
 						<header>
-							<h2 class="underline">Example<xsl:if test="$number-examples &gt; 1">s</xsl:if>:</h2>
+							<h2>Example<xsl:if test="$number-examples &gt; 1">s</xsl:if>:</h2>
 						</header>
 
 						<xsl:apply-templates select="example">
@@ -394,7 +394,7 @@
 	<xsl:if test="options">
 		<section id="options">
 			<header>
-				<h2 class="underline">Options</h2>
+				<h2>Options</h2>
 			</header>
 			<xsl:for-each select="options/option">
 				<xsl:sort select="@name"/>
@@ -452,7 +452,7 @@
 	<xsl:if test="methods">
 		<section id="methods">
 			<header>
-				<h2 class="underline">Methods</h2>
+				<h2>Methods</h2>
 			</header>
 			<xsl:for-each select="methods/method">
 				<xsl:sort select="@name"/>
@@ -470,7 +470,7 @@
 	<xsl:if test="extension-points">
 		<section id="extension-points">
 			<header>
-				<h2 class="underline">Extension Points</h2>
+				<h2>Extension Points</h2>
 			</header>
 			<p>
 				The <xsl:value-of select="$widget-name"/> widget is built with the
@@ -499,7 +499,7 @@
 	<xsl:if test="events">
 		<section id="events">
 			<header>
-				<h2 class="underline">Events</h2>
+				<h2>Events</h2>
 			</header>
 			<xsl:for-each select="events/event">
 				<xsl:sort select="@name"/>
