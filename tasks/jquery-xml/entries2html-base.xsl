@@ -458,55 +458,41 @@
 				<xsl:sort select="@name"/>
 				<xsl:variable name="method-name" select="@name"/>
 				<xsl:variable name="method-position" select="position()"/>
-				<div id="method-{$method-name}">
-					<xsl:for-each select="signature | self::node()[count(signature) = 0]">
-						<div>
-							<xsl:attribute name="class">
-								<xsl:text>api-item</xsl:text>
-								<xsl:if test="$method-position = 1 and position() = 1">
-									<xsl:text> first-item</xsl:text>
-								</xsl:if>
-							</xsl:attribute>
-
-							<xsl:call-template name="widget-method">
-								<xsl:with-param name="entry-name" select="$entry-name"/>
-								<xsl:with-param name="method-name" select="$method-name"/>
-							</xsl:call-template>
-
-							<xsl:if test="$widget-method-examples and not(../@suppress-examples)">
-								<div>
-									<strong>Code examples:</strong>
-
-									<p>Invoke the <xsl:value-of select="@name"/> method:</p>
-									<pre><code data-lang="javascript">
-										<xsl:choose>
-											<xsl:when test="example">
-												<xsl:value-of select="example"/>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:if test="@example-return-var">
-													<xsl:text>var </xsl:text>
-													<xsl:value-of select="@example-return-var"/>
-													<xsl:text> = </xsl:text>
-												</xsl:if>
-												<xsl:text>$( ".selector" ).</xsl:text>
-												<xsl:value-of select="$widget-name"/>
-												<xsl:text>( "</xsl:text>
-												<xsl:value-of select="$method-name"/>
-												<xsl:text>"</xsl:text>
-												<xsl:if test="@example-params">
-													<xsl:text>, </xsl:text>
-													<xsl:value-of select="@example-params"/>
-												</xsl:if>
-												<xsl:text> );</xsl:text>
-											</xsl:otherwise>
-										</xsl:choose>
-									</code></pre>
-								</div>
-							</xsl:if>
-						</div>
-					</xsl:for-each>
-				</div>
+				<xsl:call-template name="widget-method-full">
+					<xsl:with-param name="entry-name" select="$entry-name"/>
+					<xsl:with-param name="widget-name" select="$widget-name"/>
+					<xsl:with-param name="method-name" select="$method-name"/>
+					<xsl:with-param name="method-position" select="$method-position"/>
+				</xsl:call-template>
+			</xsl:for-each>
+		</section>
+	</xsl:if>
+	<xsl:if test="extension-points">
+		<section id="extension-points">
+			<header>
+				<h2 class="underline">Extension Points</h2>
+			</header>
+			<p>
+				The <xsl:value-of select="$widget-name"/> widget is built with the
+				<a href="http://api.jqueryui.com/jQuery.widget/">widget factory</a> and can be
+				extended. When extending widgets, you have the ability to override or add to the
+				behavior of existing methods. The following methods are provided as extension points
+				with the same API stability as the <a href="#methods">plugin methods</a> listed
+				above. For more information on widget extensions, see
+				<a href="http://learn.jquery.com/jquery-ui/widget-factory/extending-widgets/">Extending
+				Widgets with the Widget Factory</a>.
+			</p>
+			<hr/>
+			<xsl:for-each select="extension-points/method">
+				<xsl:sort select="@name"/>
+				<xsl:variable name="method-name" select="@name"/>
+				<xsl:variable name="method-position" select="position()"/>
+				<xsl:call-template name="widget-method-full">
+					<xsl:with-param name="entry-name" select="$entry-name"/>
+					<xsl:with-param name="widget-name" select="$widget-name"/>
+					<xsl:with-param name="method-name" select="$method-name"/>
+					<xsl:with-param name="method-position" select="$method-position"/>
+				</xsl:call-template>
 			</xsl:for-each>
 		</section>
 	</xsl:if>
@@ -572,6 +558,15 @@
 				<xsl:variable name="name" select="@name"/>
 				<div><a href="#method-{$name}"><xsl:value-of select="$name"/></a></div>
 			</xsl:for-each>
+			<xsl:if test="extension-points">
+				<br/>
+				<h3>Extension Points</h3>
+				<xsl:for-each select="extension-points/method">
+					<xsl:sort select="@name"/>
+					<xsl:variable name="name" select="@name"/>
+					<div><a href="#method-{$name}"><xsl:value-of select="$name"/></a></div>
+				</xsl:for-each>
+			</xsl:if>
 		</div>
 
 		<div class="quick-nav-section">
@@ -915,6 +910,68 @@
 			</xsl:if>
 		</span>
 	</xsl:if>
+</xsl:template>
+
+<xsl:template name="widget-method-full">
+	<xsl:param name="entry-name"/>
+	<xsl:param name="widget-name"/>
+	<xsl:param name="method-name"/>
+	<xsl:param name="method-position"/>
+	<xsl:variable name="auto-example"
+		select="$widget-method-examples and not(../@suppress-auto-examples) and name(..) = 'methods'"/>
+
+	<div id="method-{$method-name}">
+		<xsl:for-each select="signature | self::node()[count(signature) = 0]">
+			<div>
+				<xsl:attribute name="class">
+					<xsl:text>api-item</xsl:text>
+					<xsl:if test="$method-position = 1 and position() = 1">
+						<xsl:text> first-item</xsl:text>
+					</xsl:if>
+				</xsl:attribute>
+
+				<xsl:call-template name="widget-method">
+					<xsl:with-param name="entry-name" select="$entry-name"/>
+					<xsl:with-param name="method-name" select="$method-name"/>
+				</xsl:call-template>
+
+				<xsl:variable name="custom-example" select="example"/>
+				<xsl:variable name="has-example" select="$auto-example or $custom-example"/>
+				<xsl:if test="$has-example">
+					<div>
+						<strong>Code examples:</strong>
+
+						<xsl:if test="$auto-example and not(@suppress-auto-examples)">
+							<p>Invoke the <xsl:value-of select="@name"/> method:</p>
+							<pre><code data-lang="javascript">
+								<xsl:if test="@example-return-var">
+									<xsl:text>var </xsl:text>
+									<xsl:value-of select="@example-return-var"/>
+									<xsl:text> = </xsl:text>
+								</xsl:if>
+								<xsl:text>$( ".selector" ).</xsl:text>
+								<xsl:value-of select="$widget-name"/>
+								<xsl:text>( "</xsl:text>
+								<xsl:value-of select="$method-name"/>
+								<xsl:text>"</xsl:text>
+								<xsl:if test="@example-params">
+									<xsl:text>, </xsl:text>
+									<xsl:value-of select="@example-params"/>
+								</xsl:if>
+								<xsl:text> );</xsl:text>
+							</code></pre>
+						</xsl:if>
+						<xsl:if test="$custom-example">
+							<p><xsl:apply-templates select="example/desc"/></p>
+							<pre><code data-lang="javascript">
+								<xsl:copy-of select="example/code/text()"/>
+							</code></pre>
+						</xsl:if>
+					</div>
+				</xsl:if>
+			</div>
+		</xsl:for-each>
+	</div>
 </xsl:template>
 
 <xsl:template name="widget-method">
