@@ -605,8 +605,7 @@
 	</p>
 	<pre><code data-lang="javascript">
 		// getter
-		var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>" );
-		<xsl:if test="not(@init-only)">
+		var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>" );<xsl:if test="not(@init-only)">
 
 		// setter
 		$( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>", <xsl:value-of select="@example-value"/> );
