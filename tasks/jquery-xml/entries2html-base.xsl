@@ -812,7 +812,18 @@
 	</xsl:if>
 	<xsl:if test="not(argument)">
 		<ul>
-			<li><div class="null-signature">This method does not accept any arguments.</div></li>
+			<li>
+				<div class="null-signature">
+					<xsl:choose>
+						<xsl:when test="count(../signature) &gt; 1">
+							<xsl:text>This signature does not accept any arguments.</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>This method does not accept any arguments.</xsl:text>
+						</xsl:otherwise>
+					</xsl:choose>
+				</div>
+			</li>
 		</ul>
 	</xsl:if>
 </xsl:template>
