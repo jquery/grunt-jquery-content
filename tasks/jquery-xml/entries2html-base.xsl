@@ -798,6 +798,7 @@
 			<xsl:if test="position() &gt; 1"><xsl:text>, </xsl:text></xsl:if>
 			<xsl:value-of select="@name"/>
 			<xsl:if test="@optional"><xsl:text> ]</xsl:text></xsl:if>
+			<xsl:if test="@rest"><xsl:text> [, ... ]</xsl:text></xsl:if>
 		</xsl:for-each>
 		<xsl:text> </xsl:text>
 	</xsl:if>
