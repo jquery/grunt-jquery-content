@@ -762,24 +762,42 @@
 </xsl:template>
 
 <xsl:template name="return-value">
-	<xsl:if test="@return or return">
+	<xsl:param name="widget-method"/>
+	<xsl:param name="explicit-return" select="@return or return"/>
+
+	<xsl:if test="$explicit-return or $widget-method">
 		<span class="returns">
 			<xsl:text>Returns: </xsl:text>
-			<xsl:if test="@return">
-				<xsl:call-template name="render-type-simple">
-					<xsl:with-param name="typename" select="@return"/>
-				</xsl:call-template>
-			</xsl:if>
-			<xsl:if test="return">
-				<xsl:for-each select="return">
-					<xsl:if test="position() &gt; 1">
-						<xsl:text> or </xsl:text>
+
+			<xsl:choose>
+				<xsl:when test="$explicit-return">
+					<xsl:if test="@return">
+						<xsl:call-template name="render-type-simple">
+							<xsl:with-param name="typename" select="@return"/>
+						</xsl:call-template>
 					</xsl:if>
-					<xsl:call-template name="render-type">
-						<xsl:with-param name="typename" select="@type"/>
-					</xsl:call-template>
-				</xsl:for-each>
-			</xsl:if>
+					<xsl:if test="return">
+						<xsl:for-each select="return">
+							<xsl:if test="position() &gt; 1">
+								<xsl:text> or </xsl:text>
+							</xsl:if>
+							<xsl:call-template name="render-type">
+								<xsl:with-param name="typename" select="@type"/>
+							</xsl:call-template>
+						</xsl:for-each>
+					</xsl:if>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:if test="$widget-method">
+						<xsl:call-template name="render-type">
+							<xsl:with-param name="typename" select="'jQuery'"/>
+						</xsl:call-template>
+						<xsl:text> (</xsl:text>
+							<a href="http://learn.jquery.com/jquery-ui/widget-factory/widget-method-invocation/">plugin only</a>
+						<xsl:text>)</xsl:text>
+					</xsl:if>
+				</xsl:otherwise>
+			</xsl:choose>
 		</span>
 	</xsl:if>
 </xsl:template>
@@ -993,7 +1011,9 @@
 		<xsl:call-template name="method-signature">
 			<xsl:with-param name="method-name" select="$method-name"/>
 		</xsl:call-template>
-		<xsl:call-template name="return-value"/>
+		<xsl:call-template name="return-value">
+			<xsl:with-param name="widget-method" select="true()"/>
+		</xsl:call-template>
 	</h3>
 	<div>
 		<xsl:apply-templates select="desc">
