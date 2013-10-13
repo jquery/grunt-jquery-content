@@ -5,8 +5,6 @@
 <xsl:variable name="version-category-links" select="false()"/>
 <!-- Set this to false to prevent prefixing method names with a dot -->
 <xsl:variable name="method-prefix-dot" select="true()"/>
-<!-- Set this to false to prevent widget method examples from being generated -->
-<xsl:variable name="widget-method-examples" select="true()"/>
 
 <xsl:variable name="lowercase" select="'abcdefghijklmnopqrstuvwxyz'"/>
 <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
@@ -947,7 +945,7 @@
 	<xsl:param name="method-name"/>
 	<xsl:param name="method-position"/>
 	<xsl:variable name="auto-example"
-		select="$widget-method-examples and not(../@suppress-auto-examples) and name(..) = 'methods'"/>
+		select="not(../@suppress-auto-examples) and name(..) = 'methods'"/>
 
 	<div id="method-{$method-name}">
 		<xsl:for-each select="signature | self::node()[count(signature) = 0]">
