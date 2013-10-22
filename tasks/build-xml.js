@@ -184,6 +184,21 @@ grunt.registerTask( "build-xml-categories", function() {
 				return;
 			}
 
+			// xml2json can't determine when to use an array if there is only one child,
+			// so we need to ensure all child terms are stored in an array
+			var taxonomies = grunt.file.readJSON( targetPath );
+			function normalize( term ) {
+				if ( term.children && term.children.item ) {
+					term.children = [ term.children.item ];
+				}
+
+				if ( term.children ) {
+					term.children.forEach( normalize );
+				}
+			}
+			taxonomies.category.forEach( normalize );
+			grunt.file.write( targetPath, JSON.stringify( taxonomies ) );
+
 			// Syntax highlight code blocks
 			function highlightDescription( category ) {
 				if ( category.description ) {
