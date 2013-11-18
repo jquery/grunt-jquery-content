@@ -120,10 +120,17 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 			cmd: "xsltproc",
 			args: [ "--xinclude", "entries2html.xsl", fileName ]
 		}, function( err, content ) {
+
+			// Certain errors won't cause the tranform to fail. For example, a
+			// broken include will write to stderr, but still exit cleanly.
+			if ( content.stderr && !err ) {
+				err = new Error( content.stderr );
+			}
+
 			if ( err ) {
 				grunt.verbose.error();
 				grunt.log.error( err );
-				fileDone();
+				fileDone( err );
 				return;
 			}
 			grunt.verbose.ok();
