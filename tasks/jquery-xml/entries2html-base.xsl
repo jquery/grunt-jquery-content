@@ -1125,28 +1125,23 @@ placeholder with @foo from the <entry> -->
 </xsl:template>
 
 <!--
-Handle placeholders in attribute values for includes.
-Include: <element attr="{placeholder-name|default}">
-Source: <entry placeholder-name="override-value">
+Handle attribute value overrides for includes.
+Include: <option name="foo" default="bar">
+Source: <entry option-foo-default="qux">
+Result: <option name="foo" default="qux">
 -->
-<xsl:template match="@*[starts-with(., '{') and contains(., '|')]" mode="value">
-	<xsl:variable name="value" select="translate(., '{}', '')"/>
-	<xsl:variable name="defaultValue" select="substring-after($value, '|')"/>
-	<xsl:variable name="override" select="substring-before($value, '|')"/>
-	<xsl:variable name="overrideValue" select="ancestor::entry[1]/@*[name() = $override]"/>
+<xsl:template match="@*" mode="value">
+	<xsl:variable name="override-name" select="concat(name(..), '-', ../@name, '-', name())"/>
+	<xsl:variable name="override" select="ancestor::entry[1]/@*[name() = $override-name]"/>
 
 	<xsl:choose>
-		<xsl:when test="$overrideValue">
-			<xsl:value-of select="$overrideValue"/>
+		<xsl:when test="$override">
+			<xsl:value-of select="$override"/>
 		</xsl:when>
 		<xsl:otherwise>
-			<xsl:value-of select="$defaultValue"/>
+			<xsl:value-of select="."/>
 		</xsl:otherwise>
 	</xsl:choose>
-</xsl:template>
-
-<xsl:template match="@*" mode="value">
-	<xsl:value-of select="."/>
 </xsl:template>
 
 <!-- escape-string, from xml2json.xsl -->
