@@ -5,7 +5,7 @@ function htmlEscape( text ) {
 	return text
 		// supports keeping markup in source file, but drop from inline sample
 		.replace( /<!-- @placeholder-start\((.+)\) -->[\s\S]+@placeholder-end -->/g, function( match, input ) {
-			return "<-- " + input + " -->";
+			return "<!-- " + input + " -->";
 		})
 		.replace( /&/g, "&amp;" )
 		.replace( /</g, "&lt;" )
