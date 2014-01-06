@@ -67,7 +67,11 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 
 			// Convert markdown to HTML
 			if ( fileType === "md" ) {
-				content = grunt.helper( "parse-markdown", content, post.toc );
+				content = grunt.helper( "parse-markdown", content, {
+					generateLinks: post.toc || !post.noHeadingLinks,
+					generateToc: post.toc
+				});
+				delete post.noHeadingLinks;
 				delete post.toc;
 			}
 
@@ -233,11 +237,15 @@ grunt.registerHelper( "syntax-highlight", (function() {
 	};
 })() );
 
-grunt.registerHelper( "parse-markdown", function( src, generateToc ) {
+grunt.registerHelper( "parse-markdown", function( src, options ) {
 	var toc = "",
 		marked = require( "marked" ),
 		tokens = marked.lexer( src ),
 		links = tokens.links;
+
+	if ( !options.generateLinks ) {
+		return marked.parser( tokens );
+	}
 
 	tokens.forEach(function( item ) {
 		if ( item.type !== "heading" ) {
@@ -263,13 +271,13 @@ grunt.registerHelper( "parse-markdown", function( src, generateToc ) {
 				"<span class='visuallyhidden'>link</span>" +
 			"</a> " + parsedText + "</h" + item.depth + ">";
 
-		if ( generateToc ) {
+		if ( options.generateToc ) {
 			toc += new Array( (item.depth - 1) * 2 + 1 ).join( " " ) + "* " +
 				"[" + item.tocText + "](#" + item.tocId + ")\n";
 		}
 	});
 
-	if ( generateToc ) {
+	if ( options.generateToc ) {
 		tokens = marked.lexer( toc ).concat( tokens );
 		// The TOC never generates links, so we can just copy the links directly
 		// from the original tokens.
