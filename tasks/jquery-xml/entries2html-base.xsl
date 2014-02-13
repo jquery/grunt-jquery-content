@@ -723,7 +723,7 @@
 		<xsl:for-each select="argument">
 			<xsl:if test="position() &gt; 1">, </xsl:if>
 			<a href="http://api.jquery.com/Types/#{@type}">
-				<xsl:value-of select="@type"/>
+				<xsl:call-template name="render-types"/>
 			</a>
 			<xsl:text> </xsl:text>
 			<xsl:value-of select="@name"/>
