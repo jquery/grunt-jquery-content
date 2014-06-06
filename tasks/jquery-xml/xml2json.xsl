@@ -23,6 +23,11 @@
   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
   THE POSSIBILITY OF SUCH DAMAGE.
+
+  ====
+
+  Modified to remove number parsing so that version numbers like 1.0 are not
+  converted to the number 1, but stay as a string of "1.0".
 -->
 
   <xsl:output indent="no" omit-xml-declaration="yes" method="text" encoding="UTF-8" media-type="text/x-json"/>
@@ -118,12 +123,6 @@
       </xsl:when>
       <xsl:otherwise><xsl:value-of select="$s"/></xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
-
-  <!-- number (no support for javascript mantissa) -->
-  <xsl:template match="text()[not(string(number())='NaN' or
-                       (starts-with(.,'0' ) and . != '0'))]">
-    &quot;<xsl:value-of select="."/>&quot;
   </xsl:template>
 
   <!-- boolean, case-insensitive -->
