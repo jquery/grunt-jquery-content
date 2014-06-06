@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <!--
-  Copyright (c) 2006, Doeke Zanstra
+  Copyright (c) 2006,2008 Doeke Zanstra
   All rights reserved.
-
-  Note: This is a hacked version of xml2json.xslt
-  ****  All numbers will be output as strings to prevent version numbers like
-  ****  1.0 changing to 1
-  ****  If you want the original version, get it from
-  ****  http://code.google.com/p/xml2json-xslt/
 
   Redistribution and use in source and binary forms, with or without modification, 
   are permitted provided that the following conditions are met:
@@ -18,10 +12,6 @@
   form must reproduce the above copyright notice, this list of conditions and the 
   following disclaimer in the documentation and/or other materials provided with 
   the distribution.
-
-  Neither the name of the dzLib nor the names of its contributors may be used to 
-  endorse or promote products derived from this software without specific prior 
-  written permission.
 
   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
@@ -36,7 +26,7 @@
 -->
 
   <xsl:output indent="no" omit-xml-declaration="yes" method="text" encoding="UTF-8" media-type="text/x-json"/>
-	<xsl:strip-space elements="*"/>
+  <xsl:strip-space elements="*"/>
   <!--contant-->
   <xsl:variable name="d">0123456789</xsl:variable>
 
@@ -130,23 +120,15 @@
     </xsl:choose>
   </xsl:template>
 
-  <!-- number (no support for javascript mantise) -->
-  <xsl:template match="text()[not(string(number())='NaN')]">
+  <!-- number (no support for javascript mantissa) -->
+  <xsl:template match="text()[not(string(number())='NaN' or
+                       (starts-with(.,'0' ) and . != '0'))]">
     &quot;<xsl:value-of select="."/>&quot;
   </xsl:template>
 
   <!-- boolean, case-insensitive -->
   <xsl:template match="text()[translate(.,'TRUE','true')='true']">true</xsl:template>
   <xsl:template match="text()[translate(.,'FALSE','false')='false']">false</xsl:template>
-
-  <!-- item:null -->
-  <xsl:template match="*[count(child::node())=0]">
-    <xsl:call-template name="escape-string">
-      <xsl:with-param name="s" select="local-name()"/>
-    </xsl:call-template>
-    <xsl:text>:null</xsl:text>
-    <xsl:if test="following-sibling::*">,</xsl:if>
-  </xsl:template>
 
   <!-- object -->
   <xsl:template match="*" name="base">
@@ -155,7 +137,16 @@
       <xsl:with-param name="s" select="name()"/>
     </xsl:call-template>
     <xsl:text>:</xsl:text>
-    <xsl:apply-templates select="child::node()"/>
+    <!-- check type of node -->
+    <xsl:choose>
+      <!-- null nodes -->
+      <xsl:when test="count(child::node())=0">null</xsl:when>
+      <!-- other nodes -->
+      <xsl:otherwise>
+        <xsl:apply-templates select="child::node()"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <!-- end of type check -->
     <xsl:if test="following-sibling::*">,</xsl:if>
     <xsl:if test="not(following-sibling::*)">}</xsl:if>
   </xsl:template>
