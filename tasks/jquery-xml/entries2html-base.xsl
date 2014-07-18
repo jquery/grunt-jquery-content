@@ -721,6 +721,7 @@
 	<xsl:if test="argument">
 		<xsl:text> </xsl:text>
 		<xsl:for-each select="argument">
+			<xsl:if test="@optional"> [</xsl:if>
 			<xsl:if test="position() &gt; 1">, </xsl:if>
 			<a href="http://api.jquery.com/Types/#{@type}">
 				<xsl:value-of select="@type"/>
@@ -730,6 +731,7 @@
 			<xsl:if test="@type = 'Function'">
 				<xsl:call-template name="render-type-function"/>
 			</xsl:if>
+			<xsl:if test="@optional"><xsl:text> ]</xsl:text></xsl:if>
 		</xsl:for-each>
 		<xsl:text> </xsl:text>
 	</xsl:if>
