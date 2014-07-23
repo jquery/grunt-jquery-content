@@ -732,6 +732,7 @@
 				<xsl:call-template name="render-type-function"/>
 			</xsl:if>
 			<xsl:if test="@optional"><xsl:text> ]</xsl:text></xsl:if>
+			<xsl:if test="@rest"><xsl:text> [, ... ]</xsl:text></xsl:if>
 		</xsl:for-each>
 		<xsl:text> </xsl:text>
 	</xsl:if>
