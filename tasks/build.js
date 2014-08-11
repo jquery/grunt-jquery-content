@@ -25,6 +25,10 @@ grunt.registerHelper( "wordpress-parse-post-flex", function( path ) {
 		post = {},
 		content = grunt.file.read( path );
 
+	//normalize line endings so later search for YAML works cross platform
+	var re = new RegExp(require('os').EOL, 'g');
+	content = content.replace(re, '\n')
+
 	// Check for YAML metadata
 	if ( content.substring( 0, 4 ) === "---\n" ) {
 		try {
