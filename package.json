@@ -28,8 +28,8 @@
     "grunt-wordpress": "1.0.7",
     "he": "0.1.2",
     "highlight.js": "7.3.0",
-    "js-yaml": "2.0.1",
-    "marked": "0.2.9",
+    "js-yaml": "3.1.0",
+    "marked": "0.3.2",
     "rimraf": "2.0.2",
     "which": "1.0.5"
   },
