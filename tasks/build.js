@@ -29,7 +29,7 @@ grunt.registerHelper( "wordpress-parse-post-flex", function( path ) {
 	if ( content.substring( 0, 4 ) === "---\n" ) {
 		try {
 			index = content.indexOf( "\n---\n" );
-			post = yaml.load( content.substr( 4, index - 4 ) );
+			post = yaml.safeLoad( content.substr( 4, index - 4 ) );
 			content = content.substr( index + 5 );
 		} catch( error ) {
 			grunt.log.error( "Invalid YAML metadata for " + path );
