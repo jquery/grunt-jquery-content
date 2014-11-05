@@ -133,6 +133,8 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 				fileDone( err );
 				return;
 			}
+
+			content = content.stdout;
 			grunt.verbose.ok();
 
 			var targetFileName = targetDir + path.basename( fileName, ".xml" ) + ".html";
