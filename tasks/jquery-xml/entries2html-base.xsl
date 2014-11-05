@@ -435,7 +435,7 @@
 							</xsl:for-each>
 						</ul>
 					</xsl:if>
-					<xsl:if test="@example-value">
+					<xsl:if test="@example-value | example-value">
 						<xsl:call-template name="widget-option-examples">
 							<xsl:with-param name="widget-name" select="$widget-name"/>
 						</xsl:call-template>
@@ -585,7 +585,13 @@
 
 	<p>Initialize the <xsl:value-of select="$widget-name"/> with the <code><xsl:value-of select="@name"/></code> option specified:</p>
 	<pre><code data-lang="javascript">
-		$( ".selector" ).<xsl:value-of select="$widget-name"/>({ <xsl:value-of select="@name"/>: <xsl:value-of select="@example-value"/> });
+		<xsl:text>$( ".selector" ).</xsl:text>
+		<xsl:value-of select="$widget-name"/>
+		<xsl:text>({&#10;&#9;</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>: </xsl:text>
+		<xsl:value-of select="@example-value | example-value/text()"/>
+		<xsl:text>&#10;});</xsl:text>
 	</code></pre>
 
 	<p>
@@ -602,11 +608,35 @@
 		<xsl:text> option, after initialization:</xsl:text>
 	</p>
 	<pre><code data-lang="javascript">
-		// getter
-		var <xsl:value-of select="@name"/> = $( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>" );<xsl:if test="not(@init-only)">
+		<xsl:text>// Getter&#10;</xsl:text>
+		<xsl:text>var </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> = $( ".selector" ).</xsl:text>
+		<xsl:value-of select="$widget-name"/>
+		<xsl:text>( "option", "</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>" );</xsl:text>
 
-		// setter
-		$( ".selector" ).<xsl:value-of select="$widget-name"/>( "option", "<xsl:value-of select="@name"/>", <xsl:value-of select="@example-value"/> );
+		<xsl:if test="not(@init-only)">
+			<xsl:text>&#10;&#10;</xsl:text>
+			<xsl:text>// Setter&#10;</xsl:text>
+			<xsl:text>$( ".selector" ).</xsl:text>
+			<xsl:value-of select="$widget-name"/>
+			<xsl:text>( "option", "</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>", </xsl:text>
+			<xsl:choose>
+				<xsl:when test="@example-value">
+					<xsl:value-of select="@example-value"/>
+					<xsl:text> </xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>&#10;&#9;</xsl:text>
+					<xsl:value-of select="example-value/text()"/>
+					<xsl:text>&#10;</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:text>);</xsl:text>
 		</xsl:if>
 	</code></pre>
 </xsl:template>
