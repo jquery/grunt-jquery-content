@@ -17,38 +17,7 @@ function htmlEscape( text ) {
 var cheerio = require( "cheerio" ),
 	hljs = require( "highlight.js" ),
 	he = require( "he" ),
-	yaml = require( "js-yaml" ),
 	os = require( "os" );
-
-// Add a wrapper around wordpress-parse-post that supports YAML
-grunt.registerHelper( "wordpress-parse-post-flex", function( path ) {
-	var index,
-		post = {},
-		content = grunt.file.read( path );
-
-	// Normalize line endings
-	if ( os.EOL !== "\n" ) {
-		content = content.replace( new RegExp( os.EOL, "g" ), "\n" );
-	}
-
-	// Check for YAML metadata
-	if ( content.substring( 0, 4 ) === "---\n" ) {
-		try {
-			index = content.indexOf( "\n---\n" );
-			post = yaml.safeLoad( content.substr( 4, index - 4 ) );
-			content = content.substr( index + 5 );
-		} catch( error ) {
-			grunt.log.error( "Invalid YAML metadata for " + path );
-			return null;
-		}
-
-		post.content = content;
-		return post;
-	}
-
-	// Fall back to standard JSON parsing
-	return grunt.helper( "wordpress-parse-post", path );
-});
 
 grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
 	var task = this,
@@ -60,7 +29,7 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 
 	grunt.utils.async.forEachSeries( files, function( fileName, fileDone ) {
 		var content,
-			post = grunt.helper( "wordpress-parse-post-flex", fileName ),
+			post = grunt.helper( "wordpress-parse-post", fileName ),
 			fileType = /\.(\w+)$/.exec( fileName )[ 1 ],
 			targetFileName = targetDir +
 				fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ) + ".html";
