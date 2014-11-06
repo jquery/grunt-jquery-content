@@ -16,8 +16,7 @@ function htmlEscape( text ) {
 
 var cheerio = require( "cheerio" ),
 	hljs = require( "highlight.js" ),
-	he = require( "he" ),
-	os = require( "os" );
+	he = require( "he" );
 
 grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
 	var task = this,

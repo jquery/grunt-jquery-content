@@ -184,8 +184,6 @@ grunt.registerTask( "build-xml-categories", function() {
 			args: [ "--output", targetPath,
 				grunt.task.getFile( "jquery-xml/xml2json.xsl" ), "taxonomies.xml" ]
 		}, function( error ) {
-			var taxonomies;
-
 			if ( error ) {
 				grunt.verbose.error();
 				grunt.log.error( error );
