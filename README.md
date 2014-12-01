@@ -38,7 +38,3 @@ regular markup will show up here
 <!-- more markup -->
 other content
 ```
-
-## License
-Copyright (c) 2012 jQuery Foundation
-Licensed under the MIT license.
