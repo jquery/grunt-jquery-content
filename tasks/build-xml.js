@@ -59,42 +59,6 @@ grunt.registerMultiTask( "xmllint", "Lint xml files", function() {
 	});
 });
 
-grunt.registerMultiTask( "xmltidy", "Tidy xml files - changes source files!", function() {
-	var task = this,
-		taskDone = task.async();
-
-	// Only tidy files that are lint free
-	task.requires( "xmllint" );
-
-	if ( !checkXmllint() ) {
-		return taskDone( false );
-	}
-
-	util.eachFile( this.filesSrc, function( fileName, fileDone )  {
-		grunt.verbose.write( "Tidying " + fileName + "..." );
-		spawn( "xmllint", [ "--format", fileName ], function( error, result ) {
-			if ( error ) {
-				grunt.verbose.error();
-				grunt.log.error( error );
-				return fileDone();
-			}
-
-			grunt.verbose.ok();
-			grunt.file.write( fileName, result );
-
-			fileDone();
-		});
-	}, function( error, count ) {
-		if ( task.errorCount ) {
-			grunt.warn( "Task \"" + task.name + "\" failed." );
-			return taskDone();
-		}
-
-		grunt.log.writeln( "Tidied " + count + " files." );
-		taskDone();
-	});
-});
-
 grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl and syntax highlight", function() {
 	var task = this,
 		taskDone = task.async(),
