@@ -3,6 +3,7 @@ module.exports = function( grunt ) {
 var fs = require( "fs" ),
 	path = require( "path" ),
 	which = require( "which" ),
+	spawn = require( "spawnback" ),
 	util = require( "../lib/util" ),
 	syntaxHighlight = require( "../lib/highlight" );
 
@@ -37,10 +38,7 @@ grunt.registerMultiTask( "xmllint", "Lint xml files", function() {
 
 	util.eachFile( this.filesSrc, function( fileName, fileDone ) {
 		grunt.verbose.write( "Linting " + fileName + "..." );
-		grunt.util.spawn({
-			cmd: "xmllint",
-			args: [ "--noout", fileName ]
-		}, function( error ) {
+		spawn( "xmllint", [ "--noout", fileName ], function( error ) {
 			if ( error ) {
 				grunt.verbose.error();
 				grunt.log.error( error );
@@ -74,10 +72,7 @@ grunt.registerMultiTask( "xmltidy", "Tidy xml files - changes source files!", fu
 
 	util.eachFile( this.filesSrc, function( fileName, fileDone )  {
 		grunt.verbose.write( "Tidying " + fileName + "..." );
-		grunt.util.spawn({
-			cmd: "xmllint",
-			args: [ "--format", fileName ]
-		}, function( error, result ) {
+		spawn( "xmllint", [ "--format", fileName ], function( error, result ) {
 			if ( error ) {
 				grunt.verbose.error();
 				grunt.log.error( error );
@@ -113,15 +108,14 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 
 	util.eachFile( this.filesSrc, function( fileName, fileDone ) {
 		grunt.verbose.write( "Transforming " + fileName + "..." );
-		grunt.util.spawn({
-			cmd: "xsltproc",
-			args: [ "--xinclude", "entries2html.xsl", fileName ]
-		}, function( error, content ) {
+		spawn( "xsltproc",
+			[ "--xinclude", "entries2html.xsl", fileName ],
+		function( error, content, stderr ) {
 
 			// Certain errors won't cause the tranform to fail. For example, a
 			// broken include will write to stderr, but still exit cleanly.
-			if ( content.stderr && !error ) {
-				error = new Error( content.stderr );
+			if ( stderr && !error ) {
+				error = new Error( stderr );
 			}
 
 			if ( error ) {
@@ -130,7 +124,6 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 				return fileDone( error );
 			}
 
-			content = content.stdout;
 			grunt.verbose.ok();
 
 			var targetFileName = targetDir + path.basename( fileName, ".xml" ) + ".html";
@@ -162,22 +155,20 @@ grunt.registerTask( "build-xml-categories", function() {
 		return taskDone( false );
 	}
 
-	grunt.util.spawn({
-		cmd: "xsltproc",
-		args: [ "--output", "taxonomies.xml",
-			path.join( __dirname, "jquery-xml/cat2tax.xsl" ), "categories.xml" ]
-	}, function( error ) {
+	spawn( "xsltproc",
+		[ "--output", "taxonomies.xml",
+			path.join( __dirname, "jquery-xml/cat2tax.xsl" ), "categories.xml" ],
+	function( error ) {
 		if ( error ) {
 			grunt.verbose.error();
 			grunt.log.error( error );
 			return taskDone();
 		}
 
-		grunt.util.spawn({
-			cmd: "xsltproc",
-			args: [ "--output", targetPath,
-				path.join( __dirname, "jquery-xml/xml2json.xsl" ), "taxonomies.xml" ]
-		}, function( error ) {
+		spawn( "xsltproc",
+			[ "--output", targetPath,
+				path.join( __dirname, "jquery-xml/xml2json.xsl" ), "taxonomies.xml" ],
+		function( error ) {
 			if ( error ) {
 				grunt.verbose.error();
 				grunt.log.error( error );
@@ -244,12 +235,11 @@ grunt.registerTask( "build-xml-full", function() {
 		}
 	});
 
-	grunt.util.spawn({
-		cmd: "xsltproc",
-		args: [ "--xinclude", "--path", process.cwd(),
+	spawn( "xsltproc",
+		[ "--xinclude", "--path", process.cwd(),
 			// "--output", grunt.config( "wordpress.dir" ) + "/resources/api.xml",
-			path.join( __dirname, "jquery-xml/all-entries.xsl" ), "all-entries.xml" ]
-	}, function( error, result ) {
+			path.join( __dirname, "jquery-xml/all-entries.xsl" ), "all-entries.xml" ],
+	function( error, result ) {
 
 		// For some reason using --output with xsltproc kills the --xinclude option,
 		// so we let it write to stdout, then save it to a file
