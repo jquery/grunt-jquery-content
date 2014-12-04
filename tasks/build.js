@@ -1,8 +1,12 @@
 module.exports = function( grunt ) {
 
-var wordpress = require( "gilded-wordpress" ),
+var wordpress = require( "grunt-wordpress" ),
 	util = require( "../lib/util" ),
 	syntaxHighlight = require( "../lib/highlight" );
+
+// Load the grunt-wordpress tasks as local tasks
+// Grunt doesn't provide an API to pass thru tasks from dependent grunt plugins
+require( "grunt-wordpress/tasks/wordpress" )( grunt );
 
 grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
 	var task = this,
