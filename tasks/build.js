@@ -2,7 +2,8 @@ module.exports = function( grunt ) {
 
 var wordpress = require( "grunt-wordpress" ),
 	util = require( "../lib/util" ),
-	syntaxHighlight = require( "../lib/highlight" );
+	syntaxHighlight = require( "../lib/highlight" ),
+	mainExports = require( "../" );
 
 // Load the grunt-wordpress tasks as local tasks
 // Grunt doesn't provide an API to pass thru tasks from dependent grunt plugins
@@ -16,10 +17,20 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 
 	grunt.file.mkdir( targetDir );
 
+	function parsePost( fileName, callback ) {
+		wordpressClient.parsePost( fileName, function( error, post ) {
+			if ( error ) {
+				return callback( error );
+			}
+
+			mainExports.preprocessPost( post, fileName, callback );
+		});
+	}
+
 	util.eachFile( this.filesSrc, function( fileName, fileDone ) {
 		grunt.verbose.write( "Processing " + fileName + "..." );
 
-		wordpressClient.parsePost( fileName, function( error, post ) {
+		parsePost( fileName, function( error, post ) {
 			if ( error ) {
 				return fileDone( error );
 			}
