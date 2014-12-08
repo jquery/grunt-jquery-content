@@ -23,14 +23,14 @@ grunt.registerTask( "lint", [ "xmllint" ] );
 This is a task list that must be defined per site, containing all of the build steps. A simple site would have the following task list:
 
 ```
-grunt.registerTask( "build", [ "build-pages", "build-resources" ] );
+grunt.registerTask( "build", [ "build-posts", "build-resources" ] );
 ```
 
-### build-pages
+### build-posts
 
-This multi-task takes a list of html or markdown files, copies them to `[wordpress.dir]/posts/page/`, processes `@partial` entries and highlights the syntax in each.
+This multi-task takes a list of html or markdown files, copies them to `[wordpress.dir]/posts/[post-type]/`, processes `@partial` entries and highlights the syntax in each. The keys are the post types for each set of posts.
 
-See the [`preprocessPost()` export](#preprocesspost-post-filename-callback-) for a hook to implement custom processing.
+See the [`postPreprocessors` export](#postpreprocessors) for a hook to implement custom processing.
 
 #### markdown
 
@@ -124,12 +124,21 @@ Syntax highlights content.
 
 * `content` String: The string the highlight.
 
-### preprocessPost( post, fileName, callback )
+### postPreprocessors
 
-Hook for modifying the posts before they're processed in the [`build-pages`](#build-pages) task.
+Hooks for modifying the posts before they're processed in the [`build-posts`](#build-posts) task.
+
+`postPreprocessors` is a hash of preprocessors, where the key is the post type and the value is a function which modifies the post.
+
+The functions must be in the form of:
+`function( post, fileName, callback )`
 
 * `post` Object: The post being processed.
 * `fileName` String: The name of the file used to generate the post object.
 * `callback` function( error, post ): Callback to invoke after modifying the post.
   * `error`: An `Error` instance, if there was an error while modifying the post.
   * `post` The modified post.
+
+By default, posts are placed in the `[wordpress.dir]/[post-type]` directory using the same relative path and file name as the source file. The relative path can be changed by setting the `fileName` property on the post.
+
+If a preprocessor is not defined for the given post type, then the `_default` preprocessor will be used.

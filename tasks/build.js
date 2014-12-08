@@ -20,11 +20,14 @@ grunt.registerTask( "lint", [] );
 
 grunt.registerTask( "build-wordpress", [ "check-modules", "lint", "clean-dist", "build" ] );
 
-grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
+grunt.registerMultiTask( "build-posts", "Process html and markdown files as posts", function() {
 	var task = this,
 		taskDone = task.async(),
 		wordpressClient = wordpress.createClient( grunt.config( "wordpress" ) ),
-		targetDir = grunt.config( "wordpress.dir" ) + "/posts/page/";
+		postType = this.target,
+		preprocessor = mainExports.postPreprocessors[ postType ] ||
+			mainExports.postPreprocessors._default,
+		targetDir = grunt.config( "wordpress.dir" ) + "/posts/" + postType + "/";
 
 	grunt.file.mkdir( targetDir );
 
@@ -34,7 +37,7 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 				return callback( error );
 			}
 
-			mainExports.preprocessPost( post, fileName, callback );
+			preprocessor( post, fileName, callback );
 		});
 	}
 
@@ -49,9 +52,10 @@ grunt.registerMultiTask( "build-pages", "Process html and markdown files as page
 			var content = post.content,
 				fileType = /\.(\w+)$/.exec( fileName )[ 1 ],
 				targetFileName = targetDir +
-					fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ) + ".html";
+					( post.fileName || fileName.replace( /^.+?\/(.+)\.\w+$/, "$1" ) + ".html" );
 
 			delete post.content;
+			delete post.fileName;
 
 			// Convert markdown to HTML
 			if ( fileType === "md" ) {
