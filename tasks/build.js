@@ -15,6 +15,11 @@ grunt.registerTask( "clean-dist", function() {
 	rimraf.sync( "dist" );
 });
 
+// Define an empty lint task, to be redefined by each site with relevant lint tasks
+grunt.registerTask( "lint", [] );
+
+grunt.registerTask( "build-wordpress", [ "check-modules", "lint", "clean-dist", "build" ] );
+
 grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
 	var task = this,
 		taskDone = task.async(),

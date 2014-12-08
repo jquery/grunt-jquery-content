@@ -10,6 +10,22 @@ This module builds on top of [grunt-wordpress](https://github.com/scottgonzalez/
 
 This task removes all files in the `dist/` directory.
 
+### lint
+
+This is an empty task list. If the site contains any lint checks, they should be defined here. For example, API sites should have the following task list:
+
+```
+grunt.registerTask( "lint", [ "xmllint" ] );
+```
+
+### build
+
+This is a task list that must be defined per site, containing all of the build steps. A simple site would have the following task list:
+
+```
+grunt.registerTask( "build", [ "build-pages", "build-resources" ] );
+```
+
 ### build-pages
 
 This multi-task takes a list of html or markdown files, copies them to `[wordpress.dir]/posts/page/`, processes `@partial` entries and highlights the syntax in each.
