@@ -6,6 +6,10 @@ This module builds on top of [grunt-wordpress](https://github.com/scottgonzalez/
 
 ## Tasks
 
+### clean-dist
+
+This task removes all files in the `dist/` directory.
+
 ### build-pages
 
 This multi-task takes a list of html or markdown files, copies them to `[wordpress.dir]/posts/page/`, processes `@partial` entries and highlights the syntax in each.

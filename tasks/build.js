@@ -1,6 +1,7 @@
 module.exports = function( grunt ) {
 
-var wordpress = require( "grunt-wordpress" ),
+var rimraf = require( "rimraf" ),
+	wordpress = require( "grunt-wordpress" ),
 	util = require( "../lib/util" ),
 	syntaxHighlight = require( "../lib/highlight" ),
 	mainExports = require( "../" );
@@ -9,6 +10,10 @@ var wordpress = require( "grunt-wordpress" ),
 // Grunt doesn't provide an API to pass thru tasks from dependent grunt plugins
 require( "grunt-wordpress/tasks/wordpress" )( grunt );
 require( "grunt-check-modules/tasks/check-modules" )( grunt );
+
+grunt.registerTask( "clean-dist", function() {
+	rimraf.sync( "dist" );
+});
 
 grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
 	var task = this,
