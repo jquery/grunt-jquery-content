@@ -5,9 +5,10 @@ var wordpress = require( "grunt-wordpress" ),
 	syntaxHighlight = require( "../lib/highlight" ),
 	mainExports = require( "../" );
 
-// Load the grunt-wordpress tasks as local tasks
+// Load external tasks as local tasks
 // Grunt doesn't provide an API to pass thru tasks from dependent grunt plugins
 require( "grunt-wordpress/tasks/wordpress" )( grunt );
+require( "grunt-check-modules/tasks/check-modules" )( grunt );
 
 grunt.registerMultiTask( "build-pages", "Process html and markdown files as pages, include @partials and syntax higlight code snippets", function() {
 	var task = this,
