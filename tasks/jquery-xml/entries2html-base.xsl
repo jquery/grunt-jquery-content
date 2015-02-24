@@ -1118,6 +1118,15 @@
 		<pre><code data-lang="javascript">
 			$( ".selector" ).on( "<xsl:value-of select="$event-type"/>", function( event, ui ) {} );
 		</code></pre>
+
+		<xsl:if test="example">
+			<xsl:for-each select="example">
+				<p><xsl:apply-templates select="desc"/></p>
+				<pre><code data-lang="javascript">
+					<xsl:copy-of select="code/text()"/>
+				</code></pre>
+			</xsl:for-each>
+		</xsl:if>
 	</div>
 </xsl:template>
 
