@@ -1022,10 +1022,12 @@
 							</code></pre>
 						</xsl:if>
 						<xsl:if test="$custom-example">
-							<p><xsl:apply-templates select="example/desc"/></p>
-							<pre><code data-lang="javascript">
-								<xsl:copy-of select="example/code/text()"/>
-							</code></pre>
+							<xsl:for-each select="example">
+								<p><xsl:apply-templates select="desc"/></p>
+								<pre><code data-lang="javascript">
+									<xsl:copy-of select="code/text()"/>
+								</code></pre>
+							</xsl:for-each>
 						</xsl:if>
 					</div>
 				</xsl:if>
