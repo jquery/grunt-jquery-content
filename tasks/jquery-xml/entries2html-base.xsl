@@ -413,7 +413,12 @@
 					</h3>
 					<div class="default">
 						<strong>Default: </strong>
-						<code><xsl:apply-templates select="@default" mode="value"/></code>
+						<xsl:if test="@default">
+							<code><xsl:apply-templates select="@default" mode="value"/></code>
+						</xsl:if>
+						<xsl:if test="default">
+							<pre><code data-linenum="false"><xsl:copy-of select="default/text()"/></code></pre>
+						</xsl:if>
 					</div>
 					<div>
 						<xsl:apply-templates select="desc">
