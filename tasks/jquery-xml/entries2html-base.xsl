@@ -435,14 +435,17 @@
 							</xsl:for-each>
 						</ul>
 					</xsl:if>
-					<xsl:if test="@example-value | example-value">
-						<xsl:call-template name="widget-option-examples">
-							<xsl:with-param name="widget-name" select="$widget-name"/>
-						</xsl:call-template>
+					<xsl:if test="example | @example-value | example-value">
+						<strong>Code examples:</strong>
+						<xsl:if test="@example-value | example-value">
+							<xsl:call-template name="widget-option-examples">
+								<xsl:with-param name="widget-name" select="$widget-name"/>
+							</xsl:call-template>
+						</xsl:if>
+						<xsl:apply-templates select="example">
+							<xsl:with-param name="number-examples" select="count(example)"/>
+						</xsl:apply-templates>
 					</xsl:if>
-					<xsl:apply-templates select="example">
-						<xsl:with-param name="number-examples" select="count(example)"/>
-					</xsl:apply-templates>
 				</div>
 			</xsl:for-each>
 		</section>
@@ -581,8 +584,6 @@
 <xsl:template name="widget-option-examples">
 	<xsl:param name="widget-name"/>
 
-	<strong>Code examples:</strong>
-
 	<p>Initialize the <xsl:value-of select="$widget-name"/> with the <code><xsl:value-of select="@name"/></code> option specified:</p>
 	<pre><code data-lang="javascript">
 		<xsl:text>$( ".selector" ).</xsl:text>
@@ -656,10 +657,9 @@
 			<xsl:value-of select="position() - 1"/>
 		</xsl:attribute>
 
-		<h4>
-			<xsl:if test="$number-examples &gt; 1">Example: </xsl:if>
-			<span class="desc"><xsl:apply-templates select="desc"/></span>
-		</h4>
+		<p>
+			<xsl:apply-templates select="desc"/>
+		</p>
 		<pre><code data-linenum="true">
 			<xsl:choose>
 				<xsl:when test="html">
