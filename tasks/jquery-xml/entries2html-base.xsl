@@ -435,14 +435,14 @@
 							</xsl:for-each>
 						</ul>
 					</xsl:if>
-					<xsl:if test="example | @example-value | example-value">
+					<xsl:if test="descendant::example | @example-value | example-value">
 						<strong>Code examples:</strong>
 						<xsl:if test="@example-value | example-value">
 							<xsl:call-template name="widget-option-examples">
 								<xsl:with-param name="widget-name" select="$widget-name"/>
 							</xsl:call-template>
 						</xsl:if>
-						<xsl:apply-templates select="example">
+						<xsl:apply-templates select="descendant::example">
 							<xsl:with-param name="number-examples" select="count(example)"/>
 						</xsl:apply-templates>
 					</xsl:if>
@@ -666,7 +666,7 @@
 					<xsl:call-template name="example-code"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:copy-of select="code/text()"/>
+					<xsl:apply-templates select="code"/>
 				</xsl:otherwise>
 			</xsl:choose>
 		</code></pre>
@@ -1132,9 +1132,9 @@
 	</div>
 </xsl:template>
 
-<!-- <desc> and <longdesc> support <placeholder name="foo"> to replace the
+<!-- Some elements support <placeholder name="foo"> to replace the
 placeholder with @foo from the <entry> -->
-<xsl:template match="desc|longdesc">
+<xsl:template match="desc|longdesc|code">
 	<xsl:param name="entry-name"/>
 	<xsl:apply-templates select="./node()">
 		<xsl:with-param name="entry-name" select="$entry-name"/>
