@@ -405,12 +405,12 @@
 					</xsl:attribute>
 
 					<h3>
-						<xsl:value-of select="@name"/>
-						<span class="option-type">
-							<strong>Type: </strong>
-							<xsl:call-template name="render-types"/>
-						</span>
+						<xsl:value-of select="@name"/>&#160;
 					</h3>
+					<div class="option-type">
+						<strong>Type: </strong>
+						<xsl:call-template name="render-types"/>
+					</div>
 					<div class="default">
 						<strong>Default: </strong>
 						<xsl:if test="@default">
