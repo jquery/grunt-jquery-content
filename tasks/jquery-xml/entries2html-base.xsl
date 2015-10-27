@@ -449,6 +449,7 @@
 						</xsl:if>
 						<xsl:apply-templates select="descendant::example">
 							<xsl:with-param name="number-examples" select="count(example)"/>
+							<xsl:with-param name="id-prefix" select="concat('option-', @name, '-')"/>
 						</xsl:apply-templates>
 					</xsl:if>
 				</div>
@@ -651,9 +652,11 @@
 <xsl:template match="example">
 	<xsl:param name="entry-index"/>
 	<xsl:param name="number-examples"/>
+	<xsl:param name="id-prefix"/>
 
 	<div class="entry-example">
 		<xsl:attribute name="id">
+			<xsl:value-of select="$id-prefix"/>
 			<xsl:text>example-</xsl:text>
 			<xsl:if test="$entry-index &gt; 1">
 				<xsl:value-of select="$entry-index - 1"/>
