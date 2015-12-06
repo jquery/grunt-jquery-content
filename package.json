@@ -13,28 +13,23 @@
   "bugs": {
     "url": "https://github.com/jquery/grunt-jquery-content/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jquery/grunt-jquery-content/blob/master/LICENSE.txt"
-    }
-  ],
+  "license": "MIT",
   "dependencies": {
-    "async": "0.9.0",
-    "cheerio": "0.17.0",
+    "async": "^1.5.0",
+    "cheerio": "^0.19.0",
     "grunt-check-modules": "1.0.0",
     "grunt-wordpress": "2.1.0",
     "he": "0.5.0",
-    "highlight.js": "7.3.0",
-    "marked": "0.3.2",
-    "rimraf": "2.2.8",
+    "highlight.js": "^9.0.0",
+    "marked": "^0.3.5",
+    "rimraf": "^2.4.4",
     "spawnback": "1.0.0",
-    "which": "1.0.5",
-    "wordpress": "0.1.3"
+    "which": "^1.2.0",
+    "wordpress": "^1.1.1"
   },
   "devDependencies": {
     "grunt": "0.4.5",
-    "grunt-contrib-jshint": "0.10.0"
+    "grunt-contrib-jshint": "^0.11.3"
   },
   "keywords": [
     "gruntplugin"
