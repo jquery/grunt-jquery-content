@@ -23,14 +23,14 @@
     "async": "0.9.0",
     "cheerio": "0.17.0",
     "grunt-check-modules": "1.0.0",
-    "grunt-wordpress": "2.1.0",
+    "grunt-wordpress": "2.1.1",
     "he": "0.5.0",
     "highlight.js": "7.3.0",
     "marked": "0.3.2",
     "rimraf": "2.2.8",
     "spawnback": "1.0.0",
     "which": "1.0.5",
-    "wordpress": "0.1.3"
+    "wordpress": "1.1.2"
   },
   "devDependencies": {
     "grunt": "0.4.5",
