@@ -345,7 +345,9 @@
 					</a>
 				</h4>
 
-				<xsl:call-template name="arguments"/>
+				<xsl:call-template name="arguments">
+					<xsl:with-param name="id-prefix" select="concat($id, '-')"/>
+				</xsl:call-template>
 			</li>
 		</xsl:for-each>
 	</ul>
@@ -865,9 +867,12 @@
 </xsl:template>
 
 <xsl:template name="arguments">
+	<xsl:param name="id-prefix"/>
 	<xsl:if test="argument">
 		<ul>
-			<xsl:apply-templates select="argument"/>
+			<xsl:apply-templates select="argument">
+				<xsl:with-param name="id-prefix" select="$id-prefix"/>
+			</xsl:apply-templates>
 		</ul>
 	</xsl:if>
 	<xsl:if test="not(argument)">
