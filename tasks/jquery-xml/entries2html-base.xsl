@@ -37,7 +37,23 @@
 					<xsl:text>"</xsl:text>
 				</xsl:for-each>
 			]
-		}
+		},
+		"customFields": [
+			<xsl:if test="//entry/@deprecated">
+				<xsl:text>{ "key":"deprecated", "value":"</xsl:text>
+				<xsl:value-of select="//entry/@deprecated"/>
+				<xsl:text>" }</xsl:text>
+			</xsl:if>
+			<xsl:if test="//entry/@removed">
+				<xsl:if test="//entry/@deprecated">
+					<xsl:text>,
+					</xsl:text>
+				</xsl:if>
+				<xsl:text>{ "key":"removed", "value":"</xsl:text>
+				<xsl:value-of select="//entry/@removed"/>
+				<xsl:text>" }</xsl:text>
+			</xsl:if>
+		]
 	}</script>
 
 	<xsl:if test="count(//entry) &gt; 1">
