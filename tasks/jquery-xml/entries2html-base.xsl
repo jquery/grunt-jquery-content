@@ -1108,7 +1108,7 @@
 		</xsl:call-template>
 	</div>
 	<xsl:call-template name="arguments"/>
-	<xsl:if test="not(argument[@name='ui']//property)">
+	<xsl:if test="boolean(argument[@name='ui']/@type = 'Object') and not(argument[@name='ui']//property)">
 		<p><em>Note: The <code>ui</code> object is empty but included for consistency with other events.</em></p>
 	</xsl:if>
 
