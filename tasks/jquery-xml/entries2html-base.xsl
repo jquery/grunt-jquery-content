@@ -280,7 +280,9 @@
 					<xsl:value-of select="../@name"/>
 				</h4>
 
-				<xsl:call-template name="properties"/>
+				<xsl:call-template name="properties">
+					<xsl:with-param name="id-prefix" select="concat(../@name, '-')"/>
+				</xsl:call-template>
 			</li>
 		</xsl:for-each>
 	</ul>
@@ -343,7 +345,9 @@
 					</a>
 				</h4>
 
-				<xsl:call-template name="arguments"/>
+				<xsl:call-template name="arguments">
+					<xsl:with-param name="id-prefix" select="concat($id, '-')"/>
+				</xsl:call-template>
 			</li>
 		</xsl:for-each>
 	</ul>
@@ -863,9 +867,12 @@
 </xsl:template>
 
 <xsl:template name="arguments">
+	<xsl:param name="id-prefix"/>
 	<xsl:if test="argument">
 		<ul>
-			<xsl:apply-templates select="argument"/>
+			<xsl:apply-templates select="argument">
+				<xsl:with-param name="id-prefix" select="$id-prefix"/>
+			</xsl:apply-templates>
 		</ul>
 	</xsl:if>
 	<xsl:if test="not(argument)">
@@ -887,16 +894,25 @@
 </xsl:template>
 
 <xsl:template name="properties">
+	<xsl:param name="id-prefix"/>
 	<xsl:if test="property">
 		<ul>
-			<xsl:apply-templates select="property"/>
+			<xsl:apply-templates select="property">
+				<xsl:with-param name="id-prefix" select="$id-prefix"/>
+			</xsl:apply-templates>
 		</ul>
 	</xsl:if>
 </xsl:template>
 
 <!-- arguments and properties are rendered the same way and nest -->
 <xsl:template match="argument|property">
+	<xsl:param name="id-prefix"/>
 	<li>
+		<xsl:if test="$id-prefix">
+			<xsl:attribute name="id">
+				<xsl:value-of select="concat($id-prefix, @name)"/>
+			</xsl:attribute>
+		</xsl:if>
 		<div>
 			<strong><xsl:value-of select="@name"/></strong>
 			<xsl:if test="@default"> (default: <code><xsl:value-of select="@default"/></code>)</xsl:if>
