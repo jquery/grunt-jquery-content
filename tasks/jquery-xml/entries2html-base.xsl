@@ -793,11 +793,11 @@
 		</xsl:call-template>
 	</xsl:if>
 
-	<!-- a return element -->
+	<!-- support multiple return types -->
 	<xsl:if test="return">
 		<xsl:for-each select="return">
 			<xsl:if test="position() &gt; 1">
-				<strong>ERROR: A single return element is expected</strong>
+				<span> | </span>
 			</xsl:if>
 			<xsl:call-template name="render-types"/>
 		</xsl:for-each>
