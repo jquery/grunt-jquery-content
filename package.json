@@ -33,8 +33,9 @@
     "wordpress": "^1.4.1"
   },
   "devDependencies": {
+    "eslint-config-jquery": "3.0.0",
     "grunt": "1.4.0",
-    "grunt-contrib-jshint": "3.0.0"
+    "grunt-eslint": "23.0.0"
   },
   "keywords": [
     "gruntplugin"

@@ -1,9 +1,11 @@
-var syntaxHighlight = require( "./lib/highlight" );
+"use strict";
+
+const syntaxHighlight = require( "./lib/highlight" );
 
 exports.syntaxHighlight = syntaxHighlight;
 
 exports.postPreprocessors = {
-	_default: function( post, fileName, callback ) {
+	_default( post, _fileName, callback ) {
 		callback( null, post );
 	}
 };
