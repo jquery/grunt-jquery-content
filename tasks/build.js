@@ -1,10 +1,12 @@
+"use strict";
+
 module.exports = function( grunt ) {
 
-var rimraf = require( "rimraf" ),
-	wordpress = require( "grunt-wordpress" ),
-	util = require( "../lib/util" ),
-	syntaxHighlight = require( "../lib/highlight" ),
-	mainExports = require( "../" );
+const rimraf = require( "rimraf" );
+const wordpress = require( "grunt-wordpress" );
+const util = require( "../lib/util" );
+const syntaxHighlight = require( "../lib/highlight" );
+const mainExports = require( "../" );
 
 // Load external tasks as local tasks
 // Grunt doesn't provide an API to pass thru tasks from dependent grunt plugins
@@ -13,7 +15,7 @@ require( "grunt-check-modules/tasks/check-modules" )( grunt );
 
 grunt.registerTask( "clean-dist", function() {
 	rimraf.sync( "dist" );
-});
+} );
 
 // Define an empty lint task, to be redefined by each site with relevant lint tasks
 grunt.registerTask( "lint", [] );
@@ -38,7 +40,7 @@ grunt.registerMultiTask( "build-posts", "Process html and markdown files as post
 			}
 
 			preprocessor( post, fileName, callback );
-		});
+		} );
 	}
 
 	util.eachFile( this.filesSrc, function( fileName, fileDone ) {
@@ -62,15 +64,16 @@ grunt.registerMultiTask( "build-posts", "Process html and markdown files as post
 				content = util.parseMarkdown( content, {
 					generateLinks: post.toc || !post.noHeadingLinks,
 					generateToc: post.toc
-				});
+				} );
 				delete post.noHeadingLinks;
 				delete post.toc;
 			}
 
 			// Replace partials
-			content = content.replace( /@partial\((.+)\)/g, function( match, input ) {
+			content = content.replace( /@partial\((.+)\)/g,
+				function( _match, input ) {
 				return util.htmlEscape( grunt.file.read( input ) );
-			});
+			} );
 
 			// Syntax highlight code blocks
 			if ( !grunt.option( "nohighlight" ) ) {
@@ -78,18 +81,18 @@ grunt.registerMultiTask( "build-posts", "Process html and markdown files as post
 			}
 
 			post.customFields = post.customFields || [];
-			post.customFields.push({
+			post.customFields.push( {
 				key: "source_path",
 				value: fileName
-			});
+			} );
 
 			// Write file
 			grunt.file.write( targetFileName,
 				"<script>" + JSON.stringify( post ) + "</script>\n" + content );
 
 			fileDone();
-		});
-	}, function( error, count ) {
+		} );
+	}, function( _error, count ) {
 		if ( task.errorCount ) {
 			grunt.warn( "Task \"" + task.name + "\" failed." );
 			return taskDone();
@@ -97,8 +100,8 @@ grunt.registerMultiTask( "build-posts", "Process html and markdown files as post
 
 		grunt.log.writeln( "Built " + count + " pages." );
 		taskDone();
-	});
-});
+	} );
+} );
 
 grunt.registerMultiTask( "build-resources", "Copy resources", function() {
 	var task = this,
@@ -112,7 +115,7 @@ grunt.registerMultiTask( "build-resources", "Copy resources", function() {
 			grunt.file.copy( fileName, targetDir + fileName.replace( /^.+?\//, "" ) );
 		}
 		fileDone();
-	}, function( error, count ) {
+	}, function( _error, count ) {
 		if ( task.errorCount ) {
 			grunt.warn( "Task \"" + task.name + "\" failed." );
 			return taskDone();
@@ -120,7 +123,7 @@ grunt.registerMultiTask( "build-resources", "Copy resources", function() {
 
 		grunt.log.writeln( "Built " + count + " resources." );
 		taskDone();
-	});
-});
+	} );
+} );
 
 };

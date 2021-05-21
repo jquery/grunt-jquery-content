@@ -1,20 +1,22 @@
+"use strict";
+
 module.exports = function( grunt ) {
 
-grunt.loadNpmTasks( "grunt-contrib-jshint" );
-
-grunt.initConfig({
+grunt.initConfig( {
 	watch: {
 		files: "<config:lint.files>",
 		tasks: "default"
 	},
-	jshint: {
+	eslint: {
 		options: {
 			jshintrc: true
 		},
-		files: [ "Gruntfile.js", "tasks/**/*.js" ]
+		files: [ "*.js", "lib/**/*.js", "tasks/**/*.js" ]
 	}
-});
+} );
 
-grunt.registerTask( "default", "jshint" );
+grunt.loadNpmTasks( "grunt-eslint" );
+
+grunt.registerTask( "default", "eslint" );
 
 };

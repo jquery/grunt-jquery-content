@@ -1,16 +1,18 @@
+"use strict";
+
 module.exports = function( grunt ) {
 
-var fs = require( "fs" ),
-	path = require( "path" ),
-	which = require( "which" ),
-	spawn = require( "spawnback" ),
-	util = require( "../lib/util" ),
-	syntaxHighlight = require( "../lib/highlight" );
+const fs = require( "fs" );
+const path = require( "path" );
+const which = require( "which" );
+const spawn = require( "spawnback" );
+const util = require( "../lib/util" );
+const syntaxHighlight = require( "../lib/highlight" );
 
 function checkLibxml2( executable ) {
 	try {
 		which.sync( executable );
-	} catch( error ) {
+	} catch ( error ) {
 		grunt.log.error( "Missing executable: " + executable + "." );
 		grunt.log.error( "You must install libxml2." );
 		grunt.log.error( "Downloads are available from http://www.xmlsoft.org/downloads.html" );
@@ -47,8 +49,8 @@ grunt.registerMultiTask( "xmllint", "Lint xml files", function() {
 
 			grunt.verbose.ok();
 			fileDone();
-		});
-	}, function( error, count ) {
+		} );
+	}, function( _error, count ) {
 		if ( task.errorCount ) {
 			grunt.warn( "Task \"" + task.name + "\" failed." );
 			return taskDone();
@@ -56,10 +58,11 @@ grunt.registerMultiTask( "xmllint", "Lint xml files", function() {
 
 		grunt.log.writeln( "Lint free files: " + count );
 		taskDone();
-	});
-});
+	} );
+} );
 
-grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl and syntax highlight", function() {
+grunt.registerMultiTask( "build-xml-entries",
+	"Process API xml files with xsl and syntax highlight", function() {
 	var task = this,
 		taskDone = task.async(),
 		targetDir = grunt.config( "wordpress.dir" ) + "/posts/post/";
@@ -99,8 +102,8 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 
 			grunt.file.write( targetFileName, content );
 			fileDone();
-		});
-	}, function( error, count ) {
+		} );
+	}, function( _error, count ) {
 		if ( task.errorCount ) {
 			grunt.warn( "Task \"" + task.name + "\" failed." );
 			return taskDone();
@@ -108,8 +111,8 @@ grunt.registerMultiTask( "build-xml-entries", "Process API xml files with xsl an
 
 		grunt.log.writeln( "Built " + count + " entries." );
 		taskDone();
-	});
-});
+	} );
+} );
 
 grunt.registerTask( "build-xml-categories", function() {
 	var taskDone = this.async(),
@@ -162,12 +165,12 @@ grunt.registerTask( "build-xml-categories", function() {
 			}
 
 			function highlightCategories( categories ) {
-				categories.forEach(function( category ) {
+				categories.forEach( function( category ) {
 					highlightDescription( category );
 					if ( category.children ) {
 						highlightCategories( category.children );
 					}
-				});
+				} );
 			}
 
 			if ( !grunt.option( "nohighlight" ) ) {
@@ -179,9 +182,9 @@ grunt.registerTask( "build-xml-categories", function() {
 			fs.unlinkSync( "taxonomies.xml" );
 			grunt.verbose.ok();
 			taskDone();
-		});
-	});
-});
+		} );
+	} );
+} );
 
 grunt.registerTask( "build-xml-full", function() {
 	var taskDone = this.async();
@@ -193,14 +196,15 @@ grunt.registerTask( "build-xml-full", function() {
 	grunt.file.copy( path.join( __dirname, "jquery-xml/all-entries.xml" ), "all-entries.xml", {
 		process: function( content ) {
 			return content.replace( "<!--entries-->",
-				grunt.file.expand( "entries/*.xml" ).map(function( entry ) {
+				grunt.file.expand( "entries/*.xml" ).map( function( entry ) {
 					return "<entry file=\"" + entry + "\"/>";
-				}).join( "\n" ) );
+				} ).join( "\n" ) );
 		}
-	});
+	} );
 
 	spawn( "xsltproc",
 		[ "--xinclude", "--path", process.cwd(),
+
 			// "--output", grunt.config( "wordpress.dir" ) + "/resources/api.xml",
 			path.join( __dirname, "jquery-xml/all-entries.xsl" ), "all-entries.xml" ],
 	function( error, result ) {
@@ -217,7 +221,7 @@ grunt.registerTask( "build-xml-full", function() {
 		}
 
 		taskDone();
-	});
-});
+	} );
+} );
 
 };

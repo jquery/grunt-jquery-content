@@ -1,11 +1,15 @@
+"use strict";
+
 module.exports = function( grunt ) {
 
-var wp = require( "wordpress" );
+const wp = require( "wordpress" );
 
 grunt.registerTask( "deploy-redirects", function() {
-	var config = grunt.config( "wordpress" );
-	var redirects = grunt.file.exists( "redirects.json" ) ? grunt.file.readJSON( "redirects.json" ) : {};
-	var client = wp.createClient( config );
+	const config = grunt.config( "wordpress" );
+	const redirects = grunt.file.exists( "redirects.json" ) ?
+		grunt.file.readJSON( "redirects.json" ) :
+		{};
+	const client = wp.createClient( config );
 
 	client.authenticatedCall( "jq.setRedirects", JSON.stringify( redirects ), this.async() );
 } );
