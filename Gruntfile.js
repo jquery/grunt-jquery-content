@@ -8,9 +8,6 @@ grunt.initConfig( {
 		tasks: "default"
 	},
 	eslint: {
-		options: {
-			jshintrc: true
-		},
 		files: [ "*.js", "lib/**/*.js", "tasks/**/*.js" ]
 	}
 } );
