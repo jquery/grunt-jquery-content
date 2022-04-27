@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "eslint-config-jquery": "3.0.0",
-    "grunt": "1.4.0",
+    "grunt": "1.5.2",
     "grunt-eslint": "23.0.0"
   },
   "keywords": [
