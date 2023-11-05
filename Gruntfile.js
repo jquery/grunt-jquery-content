@@ -1,19 +1,25 @@
 "use strict";
 
 module.exports = function( grunt ) {
+	grunt.initConfig( {
+		"build-posts": {
+			page: "fixture/pages/**"
+		},
+		"build-resources": {
+			all: "fixture/resources/**"
+		},
+		"build-xml-entries": {
+			all: "fixture/entries/**"
+		},
+		wordpress: {
+			url: "example.org",
+			username: "admin",
+			password: "admin",
+			dir: "test/dist/wordpress"
+		}
+	} );
 
-grunt.initConfig( {
-	watch: {
-		files: "<config:lint.files>",
-		tasks: "default"
-	},
-	eslint: {
-		files: [ "*.js", "lib/**/*.js", "tasks/**/*.js" ]
-	}
-} );
+	grunt.loadTasks( "tasks" );
 
-grunt.loadNpmTasks( "grunt-eslint" );
-
-grunt.registerTask( "default", "eslint" );
-
+	grunt.registerTask( "build", [ "build-posts", "build-resources", "build-xml-entries" ] );
 };

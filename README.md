@@ -1,3 +1,5 @@
+[![Tested with QUnit](https://img.shields.io/badge/tested_with-qunit-9c3493.svg)](https://qunitjs.com/)
+
 # grunt-jquery-content
 
 A collection of tasks for building the jQuery web sites via Grunt.

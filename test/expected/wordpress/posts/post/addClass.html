@@ -1,0 +1,120 @@
+<html><head><script>{
+		"title":
+			".addClass()",
+		"excerpt":
+			"Adds the specified class(es) to each element in the set of matched elements.",
+		"termSlugs": {
+			"category": [
+				"css","version/1.0","version/1.4"
+			]
+		}
+	}</script></head><body><article id="addClass1" class="entry method"><h2 class="section-title">
+<span class="name">.addClass( className )</span><span class="returns">Returns: <a href="http://api.jquery.com/Types/#jQuery">jQuery</a></span>
+</h2>
+<div class="entry-wrapper">
+<p class="desc"><strong>Description: </strong>Adds the specified class(es) to each element in the set of matched elements.</p>
+<ul class="signatures">
+<li class="signature">
+<h4 class="name">
+<span class="version-details">version added: 1.0</span><a id="addClass-className" href="#addClass-className"><span class="icon-link"></span>.addClass( className )</a>
+</h4>
+<ul><li id="addClass-className-className">
+<div><strong>className</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types/#String">String</a>
+</div>
+<div>One or more space-separated classes to be added.</div>
+</li></ul>
+</li>
+<li class="signature">
+<h4 class="name">
+<span class="version-details">version added: 1.4</span><a id="addClass-function" href="#addClass-function"><span class="icon-link"></span>.addClass( function )</a>
+</h4>
+<ul><li id="addClass-function-function">
+<div><strong>function</strong></div>
+<div>Type: <a href="http://api.jquery.com/Types/#Function">Function</a>( <a href="http://api.jquery.com/Types/#Integer">Integer</a> index, <a href="http://api.jquery.com/Types/#String">String</a> currentClassName )
+			=&gt;
+			<a href="http://api.jquery.com/Types/#String">String</a>
+</div>
+<div>A function returning one or more space-separated class names.</div>
+</li></ul>
+</li>
+</ul>
+<div class="longdesc" id="entry-longdesc">
+    <p>This method does not replace a class. It simply adds the class.</p>
+    <div class="syntaxhighlighter javascript">
+	<table>
+		<tbody>
+			<tr>
+				
+				<td class="gutter">
+					
+						<div class="line n1">1</div>
+					
+				</td>
+				
+				<td class="code">
+					<pre><div class="container"><div class="line"><code>$( <span class="hljs-string">"p"</span> ).addClass( <span class="hljs-string">"myClass yourClass"</span> );</code></div></div></pre>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+    <p>The <code>.addClass()</code> method changes the <code>className</code> <em>property</em> on the selected elements.</p>
+  </div>
+<section class="entry-examples" id="entry-examples"><header><h2>Example:</h2></header><div class="entry-example" id="example-0">
+<p>Add the class "selected" to the matched elements.</p>
+<div class="syntaxhighlighter xml">
+	<table>
+		<tbody>
+			<tr>
+				
+				<td class="gutter">
+					
+						<div class="line n1">1</div>
+					
+						<div class="line n2">2</div>
+					
+						<div class="line n3">3</div>
+					
+						<div class="line n4">4</div>
+					
+						<div class="line n5">5</div>
+					
+						<div class="line n6">6</div>
+					
+						<div class="line n7">7</div>
+					
+						<div class="line n8">8</div>
+					
+						<div class="line n9">9</div>
+					
+						<div class="line n10">10</div>
+					
+						<div class="line n11">11</div>
+					
+						<div class="line n12">12</div>
+					
+						<div class="line n13">13</div>
+					
+						<div class="line n14">14</div>
+					
+						<div class="line n15">15</div>
+					
+						<div class="line n16">16</div>
+					
+				</td>
+				
+				<td class="code">
+					<pre><div class="container"><div class="line"><code><span class="hljs-meta">&lt;!doctype <span class="hljs-meta-keyword">html</span>&gt;</span></code></div></div><div class="container"><div class="line"><code><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="css"></span></code></div></div><div class="container"><div class="line"><code>  <span class="hljs-selector-tag">p</span> {</code></div></div><div class="container"><div class="line"><code>    <span class="hljs-attribute">margin</span>: <span class="hljs-number">8px</span>;</code></div></div><div class="container"><div class="line"><code>    <span class="hljs-attribute">font-size</span>: <span class="hljs-number">16px</span>;</code></div></div><div class="container"><div class="line"><code>  }</code></div></div><div class="container"><div class="line"><code>  <span class="hljs-selector-class">.selected</span> {</code></div></div><div class="container"><div class="line"><code>    <span class="hljs-attribute">color</span>: blue;</code></div></div><div class="container"><div class="line"><code>  }</code></div></div><div class="container"><div class="line"><code>  <span class="hljs-selector-class">.highlight</span> {</code></div></div><div class="container"><div class="line"><code>    <span class="hljs-attribute">background</span>: yellow;</code></div></div><div class="container"><div class="line"><code>  }</code></div></div><div class="container"><div class="line"><code>  <span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span></code></div></div><div class="container"><div class="line"><code><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Hello<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></code></div></div><div class="container"><div class="line"><code><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>and<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></code></div></div><div class="container"><div class="line"><code><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Goodbye<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></code></div></div></pre>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<h4>Demo:</h4>
+<div class="demo code-demo"></div>
+</div></section>
+</div></article>
+</body></html>

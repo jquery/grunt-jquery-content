@@ -2,7 +2,7 @@
 
 module.exports = function( grunt ) {
 
-const rimraf = require( "rimraf" );
+const fs = require( "fs" );
 const wordpress = require( "grunt-wordpress" );
 const util = require( "../lib/util" );
 const syntaxHighlight = require( "../lib/highlight" );
@@ -14,7 +14,7 @@ require( "grunt-wordpress/tasks/wordpress" )( grunt );
 require( "grunt-check-modules/tasks/check-modules" )( grunt );
 
 grunt.registerTask( "clean-dist", function() {
-	rimraf.sync( "dist" );
+	fs.rmSync( "dist", { recursive: true, force: true } );
 } );
 
 // Define an empty lint task, to be redefined by each site with relevant lint tasks
