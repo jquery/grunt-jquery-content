@@ -28,7 +28,7 @@
     "highlight.js": "^10.7.2",
     "marked": "^4.0.0",
     "spawnback": "^1.0.1",
-    "which": "^2.0.2",
+    "which": "^4.0.0",
     "wordpress": "^1.4.1"
   },
   "scripts": {
