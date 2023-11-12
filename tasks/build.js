@@ -3,14 +3,13 @@
 module.exports = function( grunt ) {
 
 const fs = require( "fs" );
-const wordpress = require( "grunt-wordpress" );
+const wordpress = require( "gilded-wordpress" );
 const util = require( "../lib/util" );
 const syntaxHighlight = require( "../lib/highlight" );
 const mainExports = require( "../" );
 
 // Load external tasks as local tasks
 // Grunt doesn't provide an API to pass thru tasks from dependent grunt plugins
-require( "grunt-wordpress/tasks/wordpress" )( grunt );
 require( "grunt-check-modules/tasks/check-modules" )( grunt );
 
 grunt.registerTask( "clean-dist", function() {
