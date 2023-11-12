@@ -5,7 +5,7 @@ module.exports = function( grunt ) {
 const fs = require( "fs" );
 const path = require( "path" );
 const which = require( "which" );
-const spawn = require( "spawnback" );
+const cp = require( "child_process" );
 const util = require( "../lib/util" );
 const syntaxHighlight = require( "../lib/highlight" );
 
@@ -30,7 +30,7 @@ function checkXsltproc() {
 	return checkLibxml2( "xsltproc" );
 }
 
-grunt.registerMultiTask( "xmllint", "Lint xml files", function() {
+grunt.registerMultiTask( "xmllint", "Lint xml files", async function() {
 	var task = this,
 		taskDone = task.async();
 
@@ -38,31 +38,30 @@ grunt.registerMultiTask( "xmllint", "Lint xml files", function() {
 		return taskDone( false );
 	}
 
-	util.eachFile( this.filesSrc, function( fileName, fileDone ) {
+	var count = 0;
+	async function lintFile( fileName ) {
+		count++;
 		grunt.verbose.write( "Linting " + fileName + "..." );
-		spawn( "xmllint", [ "--noout", fileName ], function( error ) {
-			if ( error ) {
-				grunt.verbose.error();
-				grunt.log.error( error );
-				return fileDone();
-			}
+		cp.spawnSync( "xmllint", [ "--noout", fileName ] );
+		grunt.verbose.ok();
+	}
 
-			grunt.verbose.ok();
-			fileDone();
-		} );
-	}, function( _error, count ) {
-		if ( task.errorCount ) {
-			grunt.warn( "Task \"" + task.name + "\" failed." );
-			return taskDone();
-		}
-
-		grunt.log.writeln( "Lint free files: " + count );
+	try {
+		await util.eachFile( this.filesSrc, lintFile );
+	} catch ( e ) {
+		grunt.verbose.error();
+		grunt.log.error( e );
+		grunt.warn( "Task \"" + task.name + "\" failed." );
 		taskDone();
-	} );
+		return;
+	}
+
+	grunt.log.writeln( "Lint free files: " + count );
+	taskDone();
 } );
 
 grunt.registerMultiTask( "build-xml-entries",
-	"Process API xml files with xsl and syntax highlight", function() {
+	"Process API xml files with xsl and syntax highlight", async function() {
 	var task = this,
 		taskDone = task.async(),
 		targetDir = grunt.config( "wordpress.dir" ) + "/posts/post/";
@@ -73,45 +72,45 @@ grunt.registerMultiTask( "build-xml-entries",
 
 	grunt.file.mkdir( targetDir );
 
-	util.eachFile( this.filesSrc, function( fileName, fileDone ) {
+	var count = 0;
+	async function transformFile( fileName ) {
+		count++;
 		grunt.verbose.write( "Transforming " + fileName + "..." );
-		spawn( "xsltproc",
-			[ "--xinclude", "entries2html.xsl", fileName ],
-		function( error, content, stderr ) {
+		const result = cp.spawnSync( "xsltproc",
+			[ "--xinclude", "entries2html.xsl", fileName ]
+		);
 
-			// Certain errors won't cause the tranform to fail. For example, a
-			// broken include will write to stderr, but still exit cleanly.
-			if ( stderr && !error ) {
-				error = new Error( stderr );
-			}
-
-			if ( error ) {
-				grunt.verbose.error();
-				grunt.log.error( error );
-				return fileDone( error );
-			}
-
-			grunt.verbose.ok();
-
-			var targetFileName = targetDir + path.basename( fileName, ".xml" ) + ".html";
-
-			// Syntax highlight code blocks
-			if ( !grunt.option( "nohighlight" ) ) {
-				content = syntaxHighlight( content );
-			}
-
-			grunt.file.write( targetFileName, content );
-			fileDone();
-		} );
-	}, function( _error, count ) {
-		if ( task.errorCount ) {
-			grunt.warn( "Task \"" + task.name + "\" failed." );
-			return taskDone();
+		// Certain errors won't cause the tranform to fail. For example, a
+		// broken include will write to stderr, but still exit cleanly.
+		const error = result.stderr && result.stderr.toString();
+		if ( error ) {
+			throw new Error( error );
 		}
 
-		grunt.log.writeln( "Built " + count + " entries." );
+		let content = result.stdout.toString();
+
+		// Syntax highlight code blocks
+		if ( !grunt.option( "nohighlight" ) ) {
+			content = syntaxHighlight( content );
+		}
+
+		const targetFileName = targetDir + path.basename( fileName, ".xml" ) + ".html";
+		grunt.file.write( targetFileName, content );
+		grunt.verbose.ok();
+	}
+
+	try {
+		await util.eachFile( this.filesSrc, transformFile );
+	} catch ( e ) {
+		grunt.verbose.error();
+		grunt.log.error( e );
+		grunt.warn( "Task \"" + task.name + "\" failed." );
 		taskDone();
-	} );
+		return;
+	}
+
+	grunt.log.writeln( "Built " + count + " entries." );
+	taskDone();
 } );
 
 grunt.registerTask( "build-xml-categories", function() {
@@ -122,68 +121,70 @@ grunt.registerTask( "build-xml-categories", function() {
 		return taskDone( false );
 	}
 
-	spawn( "xsltproc",
-		[ "--output", "taxonomies.xml",
-			path.join( __dirname, "jquery-xml/cat2tax.xsl" ), "categories.xml" ],
-	function( error ) {
-		if ( error ) {
-			grunt.verbose.error();
-			grunt.log.error( error );
-			return taskDone();
+	try {
+		cp.spawnSync( "xsltproc", [
+			"--output", "taxonomies.xml",
+			path.join( __dirname, "jquery-xml/cat2tax.xsl" ),
+			"categories.xml"
+		] );
+	} catch ( error ) {
+		grunt.verbose.error();
+		grunt.log.error( error );
+		return taskDone();
+	}
+
+	try {
+		cp.spawnSync( "xsltproc", [
+			"--output", targetPath,
+			path.join( __dirname, "jquery-xml/xml2json.xsl" ),
+			"taxonomies.xml"
+		] );
+	} catch ( error ) {
+		grunt.verbose.error();
+		grunt.log.error( error );
+		return taskDone();
+	}
+
+	// xml2json can't determine when to use an array if there is only one child,
+	// so we need to ensure all child terms are stored in an array
+	var taxonomies = grunt.file.readJSON( targetPath );
+	function normalize( term ) {
+		if ( term.children && term.children.item ) {
+			term.children = [ term.children.item ];
 		}
 
-		spawn( "xsltproc",
-			[ "--output", targetPath,
-				path.join( __dirname, "jquery-xml/xml2json.xsl" ), "taxonomies.xml" ],
-		function( error ) {
-			if ( error ) {
-				grunt.verbose.error();
-				grunt.log.error( error );
-				return taskDone();
+		if ( term.children ) {
+			term.children.forEach( normalize );
+		}
+	}
+	taxonomies.category.forEach( normalize );
+	grunt.file.write( targetPath, JSON.stringify( taxonomies ) );
+
+	// Syntax highlight code blocks
+	function highlightDescription( category ) {
+		if ( category.description ) {
+			category.description = syntaxHighlight( category.description );
+		}
+	}
+
+	function highlightCategories( categories ) {
+		categories.forEach( function( category ) {
+			highlightDescription( category );
+			if ( category.children ) {
+				highlightCategories( category.children );
 			}
-
-			// xml2json can't determine when to use an array if there is only one child,
-			// so we need to ensure all child terms are stored in an array
-			var taxonomies = grunt.file.readJSON( targetPath );
-			function normalize( term ) {
-				if ( term.children && term.children.item ) {
-					term.children = [ term.children.item ];
-				}
-
-				if ( term.children ) {
-					term.children.forEach( normalize );
-				}
-			}
-			taxonomies.category.forEach( normalize );
-			grunt.file.write( targetPath, JSON.stringify( taxonomies ) );
-
-			// Syntax highlight code blocks
-			function highlightDescription( category ) {
-				if ( category.description ) {
-					category.description = syntaxHighlight( category.description );
-				}
-			}
-
-			function highlightCategories( categories ) {
-				categories.forEach( function( category ) {
-					highlightDescription( category );
-					if ( category.children ) {
-						highlightCategories( category.children );
-					}
-				} );
-			}
-
-			if ( !grunt.option( "nohighlight" ) ) {
-				taxonomies = grunt.file.readJSON( targetPath );
-				highlightCategories( taxonomies.category );
-				grunt.file.write( targetPath, JSON.stringify( taxonomies ) );
-			}
-
-			fs.unlinkSync( "taxonomies.xml" );
-			grunt.verbose.ok();
-			taskDone();
 		} );
-	} );
+	}
+
+	if ( !grunt.option( "nohighlight" ) ) {
+		taxonomies = grunt.file.readJSON( targetPath );
+		highlightCategories( taxonomies.category );
+		grunt.file.write( targetPath, JSON.stringify( taxonomies ) );
+	}
+
+	fs.unlinkSync( "taxonomies.xml" );
+	grunt.verbose.ok();
+	taskDone();
 } );
 
 grunt.registerTask( "build-xml-full", function() {
@@ -202,26 +203,32 @@ grunt.registerTask( "build-xml-full", function() {
 		}
 	} );
 
-	spawn( "xsltproc",
-		[ "--xinclude", "--path", process.cwd(),
+	let result;
+	let error;
+	try {
+		result = cp.spawnSync( "xsltproc", [
+			"--xinclude",
+			"--path", process.cwd(),
+			path.join( __dirname, "jquery-xml/all-entries.xsl" ),
+			"all-entries.xml"
+		] );
+	} catch ( e ) {
+		error = e;
+	}
 
-			// "--output", grunt.config( "wordpress.dir" ) + "/resources/api.xml",
-			path.join( __dirname, "jquery-xml/all-entries.xsl" ), "all-entries.xml" ],
-	function( error, result ) {
+	// For some reason using --output with xsltproc kills the --xinclude option,
+	// so we let it write to stdout, then save it to a file
+	const content = result.stdout.toString();
+	grunt.file.write( grunt.config( "wordpress.dir" ) + "/resources/api.xml", content );
+	fs.unlinkSync( "all-entries.xml" );
 
-		// For some reason using --output with xsltproc kills the --xinclude option,
-		// so we let it write to stdout, then save it to a file
-		grunt.file.write( grunt.config( "wordpress.dir" ) + "/resources/api.xml", result );
-		fs.unlinkSync( "all-entries.xml" );
+	if ( error ) {
+		grunt.verbose.error();
+		grunt.log.error( error );
+		return taskDone( false );
+	}
 
-		if ( error ) {
-			grunt.verbose.error();
-			grunt.log.error( error );
-			return taskDone( false );
-		}
-
-		taskDone();
-	} );
+	taskDone();
 } );
 
 };

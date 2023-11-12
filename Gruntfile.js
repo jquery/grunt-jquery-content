@@ -2,6 +2,12 @@
 
 module.exports = function( grunt ) {
 	grunt.initConfig( {
+		xmllint: {
+			all: [
+				"fixture/entries/**",
+				"entries2html.xsl"
+			]
+		},
 		"build-posts": {
 			page: "fixture/pages/**"
 		},
@@ -21,5 +27,6 @@ module.exports = function( grunt ) {
 
 	grunt.loadTasks( "tasks" );
 
+	grunt.registerTask( "lint", [ "xmllint" ] );
 	grunt.registerTask( "build", [ "build-posts", "build-resources", "build-xml-entries" ] );
 };
