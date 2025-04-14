@@ -669,6 +669,11 @@
 			<xsl:value-of select="position() - 1"/>
 		</xsl:attribute>
 
+		<xsl:if test="$number-examples &gt; 1">
+			<h3>
+				Example <xsl:value-of select="position()"/>
+			</h3>
+		</xsl:if>
 		<p>
 			<xsl:apply-templates select="desc"/>
 		</p>
