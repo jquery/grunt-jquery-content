@@ -13,16 +13,25 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x, 24.x]
 
     steps:
+    - name: Update apt-get cache
+      run: sudo apt-get update
+
     - name: Install Debian packages
       run: sudo apt-get install -y libxml2-utils xsltproc
-    - uses: actions/checkout@v3
-    - name: Install Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        cache: npm
+        cache-dependency-path: '**/package-lock.json'
+
     - run: npm ci
+
     - run: npm test
