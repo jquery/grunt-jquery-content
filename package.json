@@ -20,14 +20,14 @@
     }
   ],
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12",
-    "grunt-check-modules": "^1.1.0",
+    "cheerio": "1.0.0",
     "gilded-wordpress": "1.0.7",
+    "grunt-check-modules": "^1.1.0",
     "he": "^1.2.0",
-    "highlight.js": "^10.7.2",
+    "highlight.js": "^10.7.3",
     "marked": "^4.0.0",
-    "which": "^4.0.0",
-    "wordpress": "^1.4.1"
+    "which": "^5.0.0",
+    "wordpress": "^1.4.2"
   },
   "scripts": {
     "test": "eslint . && qunit test/*.js",
