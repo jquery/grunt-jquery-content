@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "cheerio": "1.0.0",
-    "gilded-wordpress": "1.0.7",
+    "gilded-wordpress": "^1.0.9",
     "grunt-check-modules": "^1.1.0",
     "he": "^1.2.0",
     "highlight.js": "^10.7.3",
